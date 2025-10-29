@@ -19,6 +19,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import DataUpload from '@/components/DataUpload';
 import Dashboard from '@/components/Dashboard';
 import { DataRow } from '@/types/data';
+// 🆕 WEEK 3: Import NameInput demo
+// import NameInput from '@/components/NameInput';
 
 // 🔧 WEEK 2: Import your UploadProgressSimulator component here
 // 🔧 WEEK 3+: Additional imports will be added as you progress
@@ -58,6 +60,10 @@ const Index = () => {
           </p>
           <p className="text-lg text-slate-500 max-w-2xl mx-auto">
           Analyze anything! Built by Asia, future data scientist</p>
+          {/* 🆕 WEEK 3: Live Event Handling Demo (removed NameInput from homepage) */}
+          {/* <div className="mt-8 mb-8 flex justify-center">
+            <NameInput />
+          </div> */}
         </div>
 
         {/* 🔧 WEEK 2: ADD YOUR PROGRESS COMPONENT HERE! */}

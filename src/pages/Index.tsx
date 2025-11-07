@@ -20,7 +20,7 @@ import DataUpload from '@/components/DataUpload';
 import Dashboard from '@/components/Dashboard';
 import { DataRow } from '@/types/data';
 // 🆕 WEEK 3: Import NameInput demo
-// import NameInput from '@/components/NameInput';
+import NameInput from '@/components/NameInput';
 
 // 🔧 WEEK 2: Import your UploadProgressSimulator component here
 // 🔧 WEEK 3+: Additional imports will be added as you progress

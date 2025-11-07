@@ -20,16 +20,19 @@ import DataUpload from '@/components/DataUpload';
 import Dashboard from '@/components/Dashboard';
 import { DataRow } from '@/types/data';
 // 🆕 WEEK 3: Import NameInput demo
+
 import NameInput from '@/components/NameInput';
 
 // 🔧 WEEK 2: Import your UploadProgressSimulator component here
+import UploadProgressSimulator from '@/components/UploadProgressSim'
 // 🔧 WEEK 3+: Additional imports will be added as you progress
 
-const Index = () => {
+function Index() {
   // 🧠 Component State - this is your component's memory!
   // useState lets your component remember and change data
-  const [data, setData] = useState<DataRow[]>([]);      // Stores uploaded data
+  const [data, setData] = useState<DataRow[]>([]); // Stores uploaded data
   const [fileName, setFileName] = useState<string>(''); // Remembers file name
+
 
   // 🔄 Event Handler - function that runs when data is uploaded
   const handleDataLoad = (loadedData: DataRow[], name: string) => {
@@ -49,7 +52,7 @@ const Index = () => {
               <Database className="h-12 w-12 text-white" />
             </div>
           </div>
-          
+
           {/* 📝 WEEK 1: Students customize this title with their name */}
           <h1 className="text-5xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent mb-4">
             Asia's Data Hub
@@ -59,19 +62,19 @@ const Index = () => {
             Upload your dataset and instantly discover insights, visualize trends, and explore your data with interactive charts and analytics.
           </p>
           <p className="text-lg text-slate-500 max-w-2xl mx-auto">
-          Analyze anything! Built by Asia, future data scientist</p>
-          {/* 🆕 WEEK 3: Live Event Handling Demo (removed NameInput from homepage) */}
-          {/* <div className="mt-8 mb-8 flex justify-center">
-            <NameInput />
-          </div> */}
+            Analyze anything! Built by Asia, future data scientist</p>
+          {/*WEEK 3: Live Event Handling Demo (removed NameInput from homepage) */}
+          {<div className="mt-8 mb-8 flex justify-center">
+              <NameInput />
+            </div> }
         </div>
 
         {/* 🔧 WEEK 2: ADD YOUR PROGRESS COMPONENT HERE! */}
         {/* This is where students will add their UploadProgressSimulator component */}
         {/* Example: */}
-        {/* <div className="mb-8">
-          <UploadProgressSimulator />
-        </div> */}
+        { <div className="mb-8">
+              <UploadProgressSimulator />
+            </div> }
 
         {data.length === 0 ? (
           <>
@@ -135,12 +138,12 @@ const Index = () => {
             <Dashboard data={data} fileName={fileName} onReset={() => {
               setData([]);
               setFileName('');
-            }} />
+            } } />
           </>
         )}
       </div>
     </div>
   );
-};
+}
 
 export default Index;

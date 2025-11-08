@@ -24,8 +24,9 @@ import { DataRow } from '@/types/data';
 import NameInput from '@/components/NameInput';
 
 // 🔧 WEEK 2: Import your UploadProgressSimulator component here
-import UploadProgressSimulator from '@/components/UploadProgressSim'
+import UploadProgressSimulator from '@/components/UploadProgressSim';
 // 🔧 WEEK 3+: Additional imports will be added as you progress
+import DataAnalyzer from '@/components/DataAnalyzer';
 
 function Index() {
   // 🧠 Component State - this is your component's memory!
@@ -72,9 +73,13 @@ function Index() {
         {/* 🔧 WEEK 2: ADD YOUR PROGRESS COMPONENT HERE! */}
         {/* This is where students will add their UploadProgressSimulator component */}
         {/* Example: */}
-        { <div className="mb-8">
+         <div className="mb-8">
               <UploadProgressSimulator />
-            </div> }
+            </div> 
+
+            <div className="w-full max-w-4xl">
+              <DataAnalyzer />
+            </div> 
 
         {data.length === 0 ? (
           <>

@@ -1,7 +1,8 @@
 import React from "react";
+import DataAnalyzer from "../DataAnalyzer";
 
 // map example
-const numbers = [1, 2, 3, 4, 5];
+const numbers = [1, 2, 3];
 const doubled = numbers.map(num => num * 2); // [2, 4, 6, 8, 10]
 
 // filter example
@@ -13,7 +14,7 @@ const users = [
 const adults = users.filter(user => user.age >= 18); // [{ name: 'Alice', age: 25 }, { name: 'Charlie', age: 30 }]
 
 // reduce example
-const sum = numbers.reduce((total, num) => total + num, 0); // 15
+const sum = numbers.reduce((total, num) => total + num, 100); // 15
 
 // Calculate statistics example
 const scores = [85, 92, 78, 96, 88, 94, 82];
@@ -39,6 +40,9 @@ const Week4LiveDemo = () => {
         <p className="mb-1">Original numbers: {numbers.join(", ")}</p>
         <p>Doubled numbers: {doubled.join(", ")}</p>
       </div>
+      <div className="w-full max-w-4xl">
+              <DataAnalyzer />
+            </div> 
       <div className="mb-6 p-4 bg-white rounded shadow w-full max-w-xl">
         <h2 className="text-2xl font-semibold mb-2">.filter() Example</h2>
         <p className="mb-1">Users: {users.map(u => `${u.name} (${u.age})`).join(", ")}</p>

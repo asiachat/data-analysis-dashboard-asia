@@ -60,6 +60,8 @@ const InsightsPanel = ({
 		// TODO: Week 4 - Add more insight types (seasonal, anomaly, prediction)
 	};
 
+	
+
 	// 🟢 EASY - Week 3: Dynamic Styling Function
 	// TODO: Students - Learn about dynamic CSS classes
 	//
@@ -94,13 +96,23 @@ const InsightsPanel = ({
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({
-				prompt: `Talk like a scottish pirate and be concise and generate insights for the following dataset: ${JSON.stringify(data)}`,
+				prompt: `Be concise and generate insights for the following dataset: ${JSON.stringify(data)}`,
 			}),
 		})
 			.then((res) => res.json())
 			.then((data) => {
-				console.log(data);
-				setAiInsight(data);
+				console.log('Insight response:', data);
+				// Support multiple response shapes:
+				// 1) { insight: { summary, anomalies } } (old docs)
+				// 2) { summary, anomalies } (server returns fields at root)
+				if (data?.insight) {
+					setAiInsight(data.insight);
+				} else if (data?.summary || data?.anomalies) {
+					setAiInsight({ summary: data.summary || '', anomalies: data.anomalies || [] });
+				} else {
+					// Fallback: store the whole payload as a summary string
+					setAiInsight({ summary: JSON.stringify(data), anomalies: [] });
+				}
 			})
 			.catch((err) => {
 				console.error(err);
@@ -132,6 +144,7 @@ const InsightsPanel = ({
 					<CardTitle>Insights</CardTitle>
 				</CardHeader>
 				<CardContent>
+					
 					<p className="text-gray-500 text-center py-8">
 						No insights available. Upload data to see automated analysis.
 					</p>
@@ -154,19 +167,20 @@ const InsightsPanel = ({
 			</CardHeader>
 			<CardContent>
 				<Button onClick={handleGenerateInsight} disabled={isLoading}>
-					{isLoading ? "Generating..." : "Generate AI Insight"}
-				</Button>
+                 {isLoading ? 'Generating...' : 'Generate AI Insight'}
+                 </Button>
+				
 				{aiInsight && (
 					<div className="my-4 border rounded-lg p-4 hover:bg-gray-50 transition-colors">
 						<h4 className="font-medium text-gray-900 mb-1">AI Insight</h4>
-						<p className="text-sm text-gray-600 mb-2 text-balance">
-							{aiInsight.summary}
-						</p>
-						<ul className="list-disc list-inside text-sm text-gray-600 mb-2 text-balance">
-							{aiInsight.anomalies.map((anomaly) => (
-								<li key={anomaly}>{anomaly}</li>
-							))}
-						</ul>
+						<p className="text-sm text-gray-600 mb-2 text-balance">{aiInsight.summary}</p>
+						{aiInsight.anomalies && aiInsight.anomalies.length > 0 && (
+							<ul className="list-disc list-inside text-sm text-gray-600 mb-2 text-balance">
+								{aiInsight.anomalies.map((anomaly) => (
+									<li key={anomaly}>{anomaly}</li>
+								))}
+							</ul>
+						)}
 					</div>
 				)}
 				<div className="space-y-4">

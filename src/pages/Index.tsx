@@ -31,6 +31,16 @@ const Index = () => {
   const [data, setData] = useState<DataRow[]>([]);      // Stores uploaded data
   const [fileName, setFileName] = useState<string>(''); // Remembers file name
 
+  // Quick sample data (useful for testing charts/insights without uploading a file)
+  const sampleData: DataRow[] = [
+    { Product: 'T-Shirts', Sales: 150, Month: 'January' },
+    { Product: 'Jeans', Sales: 200, Month: 'January' },
+    { Product: 'Shoes', Sales: 175, Month: 'January' },
+    { Product: 'T-Shirts', Sales: 180, Month: 'February' },
+    { Product: 'Jeans', Sales: 220, Month: 'February' },
+    { Product: 'Shoes', Sales: 160, Month: 'February' },
+  ];
+
   // 🔄 Event Handler - function that runs when data is uploaded
   const handleDataLoad = (loadedData: DataRow[], name: string) => {
     setData(loadedData);
@@ -127,6 +137,10 @@ const Index = () => {
               </CardHeader>
               <CardContent>
                 <DataUpload onDataLoad={handleDataLoad} />
+                <div className="mt-4 flex gap-2 justify-center">
+                  <Button onClick={() => handleDataLoad(sampleData, 'sample.csv')}>Load sample data</Button>
+                  <Button variant="ghost" onClick={() => { setData([]); setFileName(''); }}>Clear</Button>
+                </div>
               </CardContent>
             </Card>
           </>

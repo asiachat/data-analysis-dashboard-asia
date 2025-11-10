@@ -20,7 +20,7 @@ import Week5Live from "./components/Demos/Week5Live";
 import Week6Live from "./components/Demos/Week6Live";
 import BrokenDemo from "./pages/BrokenDemo";
 import BrokenDemoSolution from "./pages/BrokenDemoSolution";
-import Week7LiveDemoChat from "./components/Demos/Week7LiveDemoChat";
+
 import Week8Live from "./components/Demos/Week8Live";
 
 // Create a client for managing data queries (don't worry about this yet!)
@@ -58,7 +58,7 @@ function App() {
 
           <Route path="/week6-live" element={<Week6Live />} />
 
-          <Route path="/week7-live" element={<Week7LiveDemoChat />} />
+          
 
           {/* 🔍 Week 9: Quality Detective Challenge */}
           <Route path="/broken-demo" element={<BrokenDemo />} />

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'; //importing chart properties and ReCharts
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
-const SimpleChart = () => {
 
     const salesData = [
   { month: 'Jan', sales: 65 },
@@ -13,47 +14,52 @@ const SimpleChart = () => {
 ];
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e42'];
+
+
+const SimpleChart = ({data = salesData}) => {
 const [chartType, setChartType] = useState('bar');
-const [error, setError] = useState(''); 
 
-
+if (!data || !Array.isArray(data) || data.length === 0) {
+    return <div>No data available for charting.</div>;
+  }
 
     return (
-
+        <Card className="w-full">
+            <CardHeader>
+                <CardTitle>Week 5: Charts</CardTitle>
+            </CardHeader>
         <div>
-        <div>
-            <button onClick={() => setChartType('bar')}>Bar</button>
+        <div className="flex justify-center gap-3">
+            <Button onClick={() => setChartType('bar')}>Bar</Button>
             <br/>
-            <button onClick={() => setChartType('line')}>Line</button>
+            <Button onClick={() => setChartType('line')}>Line</Button>
         </div>
 
 <ResponsiveContainer width="100%" height={300}>
 {chartType === 'bar' && (
     <BarChart data={salesData}>
-      <CartesianGrid strokeDasharray="6 6" />
+      <CartesianGrid strokeDasharray="3 3" />
       <XAxis dataKey="month" />
       <YAxis />
       <Tooltip />
-      <Bar dataKey="sales" fill="#3b82f6" />
+      <Bar dataKey="sales" fill="purple" />
     </BarChart> )}
     </ResponsiveContainer>
 
     <ResponsiveContainer width="100%" height={300}>
         {chartType === 'line' && (
     <LineChart data={salesData}>
-    <CartesianGrid strokeDasharray="6 6" />
+    <CartesianGrid strokeDasharray="3 3" />
     <XAxis dataKey="month" />
     <YAxis />
     <Tooltip />
-    <Line type="monotone" dataKey="sales" stroke="#10b981" />
+    <Line type="monotone" dataKey="sales" stroke="blue" />
   </LineChart> )}
     </ResponsiveContainer>
-
-
-    </div>
-
-        
+</div>
+</Card>
     );
+
 }
 
 

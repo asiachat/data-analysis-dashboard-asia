@@ -19,6 +19,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import DataUpload from '@/components/DataUpload';
 import Dashboard from '@/components/Dashboard';
 import { DataRow } from '@/types/data';
+import Footer from '@/components/Footer';
 // 🆕 WEEK 3: Import NameInput demo
  import NameInput from '@/components/NameInput';
 
@@ -26,7 +27,9 @@ import { DataRow } from '@/types/data';
   import UploadProgressSimulator from '@/components/UploadProgressSimulator';
 // 🔧 WEEK 3+: Additional imports will be added as you progress
   import DataAnalyzer from '@/components/DataAnalyzer';
+  import SimpleChart from '@/components/SimpleChart'
   import MockAIChat from '@/components/MockAIChat';
+  
   
 const Index = () => {
   // 🧠 Component State - this is your component's memory!
@@ -73,18 +76,35 @@ const Index = () => {
           </p>
           <p className="text-lg text-slate-500 max-w-2xl mx-auto">
           Analyze anything! Built by Asia, future data scientist</p>
+          <br/>
           {/* 🆕 WEEK 3: Live Event Handling Demo (removed NameInput from homepage) */}
-          <div className="mt-8 mb-8 flex justify-center">
+          
+
+        {/* 🔧 WEEK 2: ADD YOUR PROGRESS COMPONENT HERE! */}
+        {/* This is where students will add their UploadProgressSimulator component */}
+      
+        <Card className="bg-white/50 backdrop-blur-sm border-purple-200">
+  <CardHeader>
+    <CardTitle className="flex items-center">
+      <Upload className="mr-3 h-6 w-6 text-purple-600" />
+      Week 2: Interactive Progress Demo
+    </CardTitle>
+    <CardDescription>
+      Try our upload progress simulator built with React state!
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    <UploadProgressSimulator />
+  </CardContent>
+</Card>
+
+<br/>
+
+<div className="mt-8 mb-8 flex justify-center">
             <NameInput />
           </div> 
         </div>
 
-        {/* 🔧 WEEK 2: ADD YOUR PROGRESS COMPONENT HERE! */}
-        {/* This is where students will add their UploadProgressSimulator component */}
-        {/* Example: */}
-        <div className="mb-8">
-          <UploadProgressSimulator />
-        </div> 
 
         <div>
           <DataAnalyzer/>
@@ -93,8 +113,16 @@ const Index = () => {
         <br/>
 
         <div>
+          <SimpleChart/>
+        </div>
+
+        <br/>
+
+        <div>
           <MockAIChat data={data}/>
         </div>
+
+        <br/>
         
        
 
@@ -168,6 +196,7 @@ const Index = () => {
           </>
         )}
       </div>
+      <Footer name="Asia Chatmon" />
     </div>
   );
   

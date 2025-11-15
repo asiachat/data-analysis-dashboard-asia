@@ -40,13 +40,13 @@ const DataUpload = ({ onDataLoad }: DataUploadProps) => {
   const [stats, setStats] = useState<UploadStats | null>(null);
   
   // 🔧 WEEK 3: Add form validation state here
-  // Example: const [validationErrors, setValidationErrors] = useState([]);
+   const [validationErrors, setValidationErrors] = useState([]);
   
   // 🔧 WEEK 4: Add data processing state here
-  // Example: const [processingStatus, setProcessingStatus] = useState('idle');
+  const [processingStatus, setProcessingStatus] = useState('idle');
   
   // 🔧 WEEK 5: Add advanced file handling state here
-  // Example: const [fileMetadata, setFileMetadata] = useState(null);
+  const [fileMetadata, setFileMetadata] = useState(null);
 
   const formatFileSize = (bytes: number): string => {
     if (bytes === 0) return '0 Bytes';

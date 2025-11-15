@@ -18,9 +18,9 @@ export default function BrokenDemo() {
       }
     } else {
       chartData = [
-        { name: 400, value: 'Jan' },
-        { name: 300, value: 'Feb' },
-        { name: 600, value: 'Mar' }
+        { name: 'Jan', value: 400 },
+        { name: 'Feb', value: 300 },
+        { name: 'Mar', value: 600 }
       ];
       console.log('Chart data set to sample data:', chartData);
       // Example error: wrong data format (intentional bug)
@@ -45,9 +45,10 @@ export default function BrokenDemo() {
           
           <div className="flex gap-2">
             <Button onClick={handleShowChart}>
-              {showChart ? 'Show Chart' : 'Hide Chart'}
+              {showChart ? 'Hide Chart' : 'Show Chart'}
             </Button>
             
+
             <Button 
               variant="outline" 
               onClick={() => {

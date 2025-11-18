@@ -159,7 +159,7 @@ const InsightsPanel = ({
 		<Card>
 			<CardHeader>
 				<CardTitle className="flex items-center gap-2">
-					<TrendingUp className="h-5 w-5" />
+					<TrendingUp className="h-5 w-5 mb-3" />
 					Data Insights
 					{/* TODO: Week 4 - Add insight count badge */}
 					{/* TODO: Week 5 - Add refresh/regenerate insights button */}

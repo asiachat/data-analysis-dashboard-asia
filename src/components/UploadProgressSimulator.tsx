@@ -109,7 +109,7 @@ const UploadProgressSimulator = () => {
             
             {isVisible && (
               <div className="p-3 bg-blue-50 border border-blue-200 rounded">
-               I stuck a whole bag of jelly beans up my ass!
+               I'll never reveal my secrets!!
               </div>
             )}
           </div>

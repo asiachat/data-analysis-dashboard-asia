@@ -4,9 +4,11 @@ import { BrokenNullProperty, BrokenFailedFetch, BrokenThrowError } from '../brok
 import ErrorBoundary from "../ErrorBoundary";
 import LoadingExample from "../LoadingExample";
 import Performance from "../Performance";
+import { Suspense } from 'react';
 
 
 const Week8Live = () => {
+  
     return (
         <div>
             <h1>Week 8 Live Demo</h1>
@@ -18,6 +20,10 @@ const Week8Live = () => {
                 <BrokenFailedFetch />
              </ErrorBoundary>
              <Performance/>
+
+             
+   
+   
     
         </div>
     );

@@ -155,6 +155,7 @@ const MockAIChat = ({data = []}) => {
   {/* Input Area */}
   <div className="flex gap-2">
     <Input
+    aria-label='form for submission'
       placeholder="Ask about your data..."
       value={input}
       onChange={(e) => setInput(e.target.value)}
@@ -162,7 +163,8 @@ const MockAIChat = ({data = []}) => {
       disabled={loading}
       className="flex-1"
     />
-    <Button onClick={handleSend} disabled={loading || !input.trim()}>
+    <Button onClick={handleSend} disabled={loading || !input.trim()}
+    aria-label='button to send data queries'>
       <Send className="h-4 w-4" />
     </Button>
   </div>

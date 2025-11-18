@@ -131,6 +131,7 @@ const UploadProgressSimulator = () => {
             
             <div className="flex items-center space-x-4">
               <input 
+              aria-label='form for name submission'
                 type="text"
                 value={name}
                 onChange={handleNameChange}

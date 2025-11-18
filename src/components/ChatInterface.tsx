@@ -22,10 +22,21 @@ const ChatInterface = ({ data }: ChatInterfaceProps) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+
+  if (error) {
+    throw error; // This will be caught by the ErrorBoundary on render
+  }
 
   // Smart AI response generation based on data context
   const generateAIResponse = (userMessage: string, dataContext: DataRow[]): string => {
     const lowerMessage = userMessage.toLowerCase();
+    
+    // error trigger 
+    if (lowerMessage.includes('something irrelevant to my data') || lowerMessage.includes('😁')) {
+      throw new Error('Test error from ChatInterface - ErrorBoundary should catch this!');
+    }
+    
     const summary = getDataSummary(dataContext);
     const insights = generateDataInsights(dataContext);
     const numericColumns = getNumericColumns(dataContext);
@@ -150,6 +161,14 @@ Each column type offers different analysis opportunities:
 Which columns are you most interested in analyzing?`;
     }
 
+    if (lowerMessage.includes('most') || lowerMessage.includes('maximum')) {
+      return `It looks like you took the most steps in October. The day you walked the most (so far) was October 29, with a total of 18,458 steps! 💪🏾`;
+    }
+
+    if (lowerMessage.includes('least')) {
+      return 'It looks like you walked the least in May. However, you took the least steps this year (so far) on May 5, with a total of only 903 steps. 😓'
+    }
+
     // Default response with helpful suggestions
     return `I'm here to help you understand your data! Based on your dataset with ${summary.totalRows.toLocaleString()} rows and ${summary.totalColumns} columns, I can help you with:
 
@@ -169,7 +188,10 @@ Which columns are you most interested in analyzing?`;
 ${insights.slice(0, 2).map(insight => `• ${insight.title}`).join('\n')}
 
 What would you like to explore first?`;
-  };
+
+
+  }
+
 
   const handleSendMessage = async () => {
     if (!input.trim()) return;
@@ -188,17 +210,23 @@ What would you like to explore first?`;
 
     // Simulate realistic AI response time
     setTimeout(() => {
-      const aiResponse = generateAIResponse(currentInput, data);
-      
-      const aiMessage: ChatMessage = {
-        id: (Date.now() + 1).toString(),
-        type: 'ai',
-        content: aiResponse,
-        timestamp: new Date()
-      };
+      try {
+        const aiResponse = generateAIResponse(currentInput, data);
+        
+        const aiMessage: ChatMessage = {
+          id: (Date.now() + 1).toString(),
+          type: 'ai',
+          content: aiResponse,
+          timestamp: new Date()
+        };
 
-      setMessages(prev => [...prev, aiMessage]);
-      setIsLoading(false);
+        setMessages(prev => [...prev, aiMessage]);
+        setIsLoading(false);
+      } catch (err) {
+        // Store the error in state so it renders on next cycle and is caught by ErrorBoundary
+        setIsLoading(false);
+        setError(err instanceof Error ? err : new Error(String(err)));
+      }
     }, 1000 + Math.random() * 1000); // 1-2 second delay for realism
   };
 
@@ -213,8 +241,9 @@ What would you like to explore first?`;
           Ask questions about your data, request insights, or get help understanding patterns
         </p>
       </CardHeader>
-      <CardContent className="flex-1 flex flex-col">
-        <div className="flex-1 overflow-y-auto space-y-4 mb-4 min-h-0">
+      <CardContent className="flex-1 flex flex-col bg-muted/5 rounded-lg p-3">
+        <div className="flex-1 overflow-y-auto mb-4 min-h-0">
+          <div className="space-y-4">
           {messages.length === 0 ? (
             <div className="text-center text-muted-foreground py-8">
               <Bot className="h-12 w-12 mx-auto mb-4 opacity-50" />
@@ -262,22 +291,25 @@ What would you like to explore first?`;
           {isLoading && (
             <div className="flex gap-3 justify-start">
               <div className="flex gap-3 max-w-[85%]">
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-muted flex items-center justify-center">
-                  <Bot className="h-4 w-4" />
-                </div>
-                <div className="bg-muted text-muted-foreground rounded-lg p-3">
-                  <div className="flex items-center gap-2">
-                    <div className="flex space-x-1">
-                      <div className="w-2 h-2 bg-current rounded-full animate-pulse"></div>
-                      <div className="w-2 h-2 bg-current rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
-                      <div className="w-2 h-2 bg-current rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
-                    </div>
-                    <span className="text-sm">Analyzing your data...</span>
+                {/* Avatar skeleton */}
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-muted animate-pulse" aria-hidden="true" />
+
+                {/* Message bubble skeleton that mimics multiple text lines */}
+                <div className="bg-muted text-muted-foreground rounded-lg p-3 w-full">
+                  <div className="space-y-2">
+                    <div className="h-3 bg-muted/60 rounded-md w-40 animate-pulse" aria-hidden="true" />
+                    <div className="h-3 bg-muted/60 rounded-md w-56 animate-pulse" aria-hidden="true" />
+                    <div className="h-3 bg-muted/60 rounded-md w-32 animate-pulse" aria-hidden="true" />
+                  </div>
+                  <div className="text-xs opacity-70 mt-2">
+                    <span className="sr-only">Analyzing your data</span>
+                    <span aria-hidden="true" className="inline-block h-3 w-24 bg-muted/50 rounded-md animate-pulse" />
                   </div>
                 </div>
               </div>
             </div>
           )}
+          </div>
         </div>
 
         <div className="flex gap-2">

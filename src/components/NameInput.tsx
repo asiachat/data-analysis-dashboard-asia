@@ -44,11 +44,13 @@ const NameInput = () => {
       </CardHeader>
       <CardContent className="space-y-4">
         <Input
+        aria-label="form for nme submission"
           placeholder="What's your name?"
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
         <Input
+        aria-label="form for email submission"
         placeholder="What's your email?"
         value={email}
         onChange={(e) => setEmail(e.target.value)}/>

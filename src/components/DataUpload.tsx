@@ -304,11 +304,10 @@ const DataUpload = ({ onDataLoad }: DataUploadProps) => {
             onDragLeave={() => setIsDragging(false)}
           >
             <div className="flex flex-col items-center space-y-4">
-              <div className={`p-4 rounded-full ${
-                isLoading ? 'bg-primary/10' : 'bg-primary/10'
-              }`}>
+              <div className="p-4 rounded-full bg-primary/10">
                 {isLoading ? (
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                  // Avatar skeleton while processing
+                  <div className="w-8 h-8 rounded-full bg-muted animate-pulse" aria-hidden="true" />
                 ) : (
                   <Upload className={`h-8 w-8 ${isDragging ? 'text-primary' : 'text-primary/70'}`} />
                 )}
@@ -325,11 +324,16 @@ const DataUpload = ({ onDataLoad }: DataUploadProps) => {
               </div>
 
               {isLoading && (
-                <div className="w-full max-w-xs space-y-2">
-                  <Progress value={uploadProgress} className="h-2" />
-                  <p className="text-xs text-muted-foreground">
-                    {uploadProgress < 90 ? 'Reading file...' : 'Analyzing data...'}
-                  </p>
+                <div className="w-full max-w-xs space-y-3" aria-live="polite">
+                  {/* Skeleton progress bar */}
+                  <div className="h-2 rounded-full bg-muted/60 animate-pulse" style={{ width: '100%' }} aria-hidden="true" />
+
+                  {/* Skeleton text lines to mimic status and filename */}
+                  <div className="h-3 rounded-md bg-muted/60 animate-pulse w-3/4" aria-hidden="true" />
+                  <div className="h-3 rounded-md bg-muted/60 animate-pulse w-1/2" aria-hidden="true" />
+
+                  {/* Hidden live status for screen readers */}
+                  <div className="text-xs text-muted-foreground mt-1 sr-only">Processing: {uploadProgress}%</div>
                 </div>
               )}
 
@@ -346,6 +350,7 @@ const DataUpload = ({ onDataLoad }: DataUploadProps) => {
               )}
 
               <input
+              aria-label='input for file submission'
                 id="file-input"
                 type="file"
                 accept=".csv"

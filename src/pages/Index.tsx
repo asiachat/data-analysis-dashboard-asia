@@ -8,7 +8,7 @@
 import { useState } from 'react';
 
 // 🎨 Icon imports - beautiful icons for your UI
-import { Upload, BarChart3, PieChart, TrendingUp, Database } from 'lucide-react';
+import { Upload, BarChart3, PieChart, TrendingUp, Database, Divide } from 'lucide-react';
 
 // 🧩 UI Component imports - pre-built components for your interface
 import { Button } from "@/components/ui/button";
@@ -41,6 +41,7 @@ const Index = () => {
   // useState lets your component remember and change data
   const [data, setData] = useState<DataRow[]>([]);      // Stores uploaded data
   const [fileName, setFileName] = useState<string>(''); // Remembers file name
+  const [showPlayground, setShowPlayground] = useState(false); // Toggle playground visibility
 
   // Quick sample data (useful for testing charts/insights without uploading a file)
   const sampleData: DataRow[] = [
@@ -72,6 +73,7 @@ const Index = () => {
             </div>
           </div>
           
+          
           {/* 📝 WEEK 1: Students customize this title with their name */}
           <h1 className="text-5xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent mb-4">
             Asia's Data Hub
@@ -89,8 +91,17 @@ const Index = () => {
         {/* 🔧 WEEK 2: ADD YOUR PROGRESS COMPONENT HERE! */}
         {/* This is where students will add their UploadProgressSimulator component */}
 
-{/*lazy laoding for all the components */}
-        <Card className="bg-white/50 backdrop-blur-sm border-purple-200">
+  <div>
+  {/*Toggle Switch for Playground */}
+<Button onClick={() => setShowPlayground(!showPlayground)}>
+  {showPlayground ? 'Hide Interactive Playground' : 'Click Here for Interactive Playground!'}
+</Button>
+
+{/*Conditionally render playground components based on toggle */}
+{showPlayground && (
+  <>
+    {/*lazy loading for all the components */}
+        <Card className="bg-white/50 backdrop-blur-sm border-purple-200 mt-6">
           <CardHeader>
             <CardTitle className="flex items-center">
               <Upload className="mr-3 h-6 w-6 text-purple-600" />
@@ -114,8 +125,6 @@ const Index = () => {
               <NameInput />
             </Suspense>
           </div> 
-        </div>
-
 
         <div>
           <Suspense fallback={<div className="h-16 flex items-center justify-center text-muted-foreground">Loading analyzer...</div>}>
@@ -141,8 +150,8 @@ const Index = () => {
           </div>
         )}
         <br/>
-        
-       
+  </>
+)}
 
         {data.length === 0 ? (
           <>
@@ -217,9 +226,13 @@ const Index = () => {
           </>
         )}
       </div>
+      </div>
+      </div>
       <Footer name="Asia Chatmon" />
     </div>
+  
     </ErrorBoundary>
+    
   );
   
 };

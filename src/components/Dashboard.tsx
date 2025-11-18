@@ -15,6 +15,7 @@ import DataTable from './DataTable';
 import ChartSection from './ChartSection';
 import InsightsPanel from './InsightsPanel';
 import ChatInterface from './ChatInterface';
+import AssistantErrorBoundary from './AssistantErrorBoundary';
 import { generateDataInsights, getDataSummary } from '@/utils/dataAnalysis';
 
 // 🔧 WEEK 6: Import custom chart components here
@@ -255,7 +256,9 @@ ${Object.entries(summary.columnTypes)
         </TabsContent>
 
         <TabsContent value="chat">
-          <ChatInterface data={data} />
+          <AssistantErrorBoundary>
+            <ChatInterface data={data} />
+          </AssistantErrorBoundary>
         </TabsContent>
 
         <TabsContent value="data">

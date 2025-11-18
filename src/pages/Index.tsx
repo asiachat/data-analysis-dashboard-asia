@@ -1,4 +1,3 @@
-
 // ==========================================
 // 🏠 WEEK 1: Index.tsx - Homepage Component
 // ==========================================
@@ -16,19 +15,25 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 // 📊 Data-related imports - components that handle your data
-import DataUpload from '@/components/DataUpload';
+
 import Dashboard from '@/components/Dashboard';
 import { DataRow } from '@/types/data';
 import Footer from '@/components/Footer';
 // 🆕 WEEK 3: Import NameInput demo
- import NameInput from '@/components/NameInput';
+import { Suspense, lazy } from 'react';
+// Helper to add an artificial delay to dynamic imports so fallbacks remain visible
+const lazyWithDelay = (factory: () => Promise<any>, ms = 800) =>
+  lazy(() => new Promise(resolve => setTimeout(() => factory().then(resolve), ms)));
+const NameInput = lazyWithDelay(() => import('@/components/NameInput'));
 
-// 🔧 WEEK 2: Import your UploadProgressSimulator component here
-  import UploadProgressSimulator from '@/components/UploadProgressSimulator';
+// 🔧 WEEK 2: Import your UploadProgressSimulator component here (lazy-loaded below)
 // 🔧 WEEK 3+: Additional imports will be added as you progress
-  import DataAnalyzer from '@/components/DataAnalyzer';
-  import SimpleChart from '@/components/SimpleChart'
-  import MockAIChat from '@/components/MockAIChat';
+  const DataAnalyzer = lazyWithDelay(() => import('@/components/DataAnalyzer'));
+  const SimpleChart = lazyWithDelay(() => import('@/components/SimpleChart'));
+  const MockAIChat = lazyWithDelay(() => import('@/components/MockAIChat'));
+  const UploadProgressSimulator = lazyWithDelay(() => import('@/components/UploadProgressSimulator'));
+  const DataUpload = lazyWithDelay(() => import('@/components/DataUpload'));
+  import ErrorBoundary from "@/components/ErrorBoundary";
   
   
 const Index = () => {
@@ -55,6 +60,7 @@ const Index = () => {
   };
 
   return (
+    <ErrorBoundary>
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
       {/* 🎨 Hero Section - The top part of your homepage */}
       <div className="container mx-auto px-4 py-8">
@@ -82,46 +88,58 @@ const Index = () => {
 
         {/* 🔧 WEEK 2: ADD YOUR PROGRESS COMPONENT HERE! */}
         {/* This is where students will add their UploadProgressSimulator component */}
-      
+
+{/*lazy laoding for all the components */}
         <Card className="bg-white/50 backdrop-blur-sm border-purple-200">
-  <CardHeader>
-    <CardTitle className="flex items-center">
-      <Upload className="mr-3 h-6 w-6 text-purple-600" />
-      Week 2: Interactive Progress Demo
-    </CardTitle>
-    <CardDescription>
-      Try our upload progress simulator built with React state!
-    </CardDescription>
-  </CardHeader>
-  <CardContent>
-    <UploadProgressSimulator />
-  </CardContent>
-</Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Upload className="mr-3 h-6 w-6 text-purple-600" />
+              Week 2: Interactive Progress Demo
+            </CardTitle>
+            <CardDescription>
+              Try our upload progress simulator built with React state!
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Suspense fallback={<div className="h-24 flex items-center justify-center text-muted-foreground">Loading demo...</div>}>
+              <UploadProgressSimulator />
+            </Suspense>
+          </CardContent>
+        </Card>
 
 <br/>
 
 <div className="mt-8 mb-8 flex justify-center">
-            <NameInput />
+            <Suspense fallback={<div className="h-10 flex items-center justify-center text-muted-foreground">Loading name input...</div>}>
+              <NameInput />
+            </Suspense>
           </div> 
         </div>
 
 
         <div>
-          <DataAnalyzer/>
+          <Suspense fallback={<div className="h-16 flex items-center justify-center text-muted-foreground">Loading analyzer...</div>}>
+            <DataAnalyzer/>
+          </Suspense>
         </div>
 
         <br/>
 
         <div>
-          <SimpleChart/>
+          <Suspense fallback={<div className="h-32 flex items-center justify-center text-muted-foreground">Loading chart...</div>}>
+            <SimpleChart/>
+          </Suspense>
         </div>
 
         <br/>
 
-        <div>
-          <MockAIChat data={data}/>
-        </div>
-
+        {data.length === 0 && (
+          <div>
+            <Suspense fallback={<div className="h-32 flex items-center justify-center text-muted-foreground">Loading assistant...</div>}>
+              <MockAIChat data={data} />
+            </Suspense>
+          </div>
+        )}
         <br/>
         
        
@@ -179,7 +197,10 @@ const Index = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
+                {/*Added a lazy load to Data Upload with delay. */}
+                <Suspense fallback={<div className="h-32 flex items-center justify-center text-muted-foreground">Loading Data Upload...</div>}>
                 <DataUpload onDataLoad={handleDataLoad} />
+                </Suspense>
                 <div className="mt-4 flex gap-2 justify-center">
                   <Button onClick={() => handleDataLoad(sampleData, 'sample.csv')}>Load sample data</Button>
                   <Button variant="ghost" onClick={() => { setData([]); setFileName(''); }}>Clear</Button>
@@ -198,6 +219,7 @@ const Index = () => {
       </div>
       <Footer name="Asia Chatmon" />
     </div>
+    </ErrorBoundary>
   );
   
 };

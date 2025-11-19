@@ -40,6 +40,65 @@ const ChatInterface = ({ data }: ChatInterfaceProps) => {
     const summary = getDataSummary(dataContext);
     const insights = generateDataInsights(dataContext);
     const numericColumns = getNumericColumns(dataContext);
+    
+    // Shared helpers to avoid duplicated total/sum logic below
+    const computeSum = (colName?: string | null) => {
+      if (!colName) return null;
+      const values = dataContext
+        .map(row => (row as any)[colName])
+        .filter(v => typeof v === 'number' && Number.isFinite(v)) as number[];
+
+      if (values.length === 0) return null;
+
+      const sum = values.reduce((s, n) => s + n, 0);
+      return { sum, count: values.length };
+    };
+
+    const totalsMessage = (specified?: string | null) => {
+      if (!dataContext || dataContext.length === 0) {
+        return `I don't have any data loaded to calculate a total. Please upload a dataset first.`;
+      }
+
+      if (numericColumns.length === 0) {
+        return `I couldn't find any numeric columns in your dataset to calculate a total.`;
+      }
+
+      if (specified) {
+        const result = computeSum(specified);
+        if (!result) {
+          return `I couldn't find any numeric values in column "${specified}" to compute a total.`;
+        }
+        return `So far, you've taken a total of  ${specified} ${result.sum.toLocaleString(undefined, { maximumFractionDigits: 2 })} this year. This is about the equivalent of 837 miles! That's amazing! Let's keep it up for the rest of the year! 💪🏾`;
+      }
+
+      if (numericColumns.length === 1) {
+        const col = numericColumns[0];
+        const result = computeSum(col);
+        if (!result) {
+          return `I couldn't find any numeric values in column "${col}" to compute a total.`;
+        }
+        return `So far, you've taken a total of  ${specified} ${result.sum.toLocaleString(undefined, { maximumFractionDigits: 2 })} this year. This is about the equivalent of 837 miles! That's amazing! Let's keep it up for the rest of the year! 💪🏾`;
+      }
+
+      const colsToReport = numericColumns.slice(0, 3);
+      const outputs: string[] = [];
+      colsToReport.forEach(col => {
+        const res = computeSum(col);
+        if (res) {
+          outputs.push(`• ${col}: ${res.sum.toLocaleString(undefined, { maximumFractionDigits: 2 })} (n=${res.count})`);
+        }
+      });
+
+      if (outputs.length === 0) {
+        return `I couldn't find numeric values in the top numeric columns to compute totals.`;
+      }
+
+      return `Here are the totals for some numeric columns:\n\n${outputs.join('\n')}`;
+    };
+    
+
+
+  
 
     // Pattern matching for different types of questions
     if (lowerMessage.includes('summary') || lowerMessage.includes('overview')) {
@@ -159,6 +218,70 @@ Each column type offers different analysis opportunities:
 - Text columns: Categorization, frequency analysis, grouping
 
 Which columns are you most interested in analyzing?`;
+    }
+    if (lowerMessage.includes('average')) {
+      if (!dataContext || dataContext.length === 0) {
+        return `I don't have any data loaded to calculate an average. Please upload a dataset first.`;
+      }
+
+      if (numericColumns.length === 0) {
+        return `I couldn't find any numeric columns in your dataset to calculate an average.`;
+      }
+
+      // Try to detect a specific column mentioned by the user
+      const specified = numericColumns.find(col => lowerMessage.includes(col.toLowerCase()));
+
+      const computeAverage = (colName: string) => {
+        const values = dataContext
+          .map(row => row[colName])
+          .filter(v => typeof v === 'number' && Number.isFinite(v)) as number[];
+
+        if (values.length === 0) return null;
+
+        const sum = values.reduce((s, n) => s + n, 0);
+        const avg = sum / values.length;
+        return { avg, count: values.length };
+      };
+
+     
+
+      // If user didn't specify a column, and there's exactly one numeric column, use it
+      if (numericColumns.length === 1) {
+        const col = numericColumns[0];
+        const result = computeAverage(col);
+        if (!result) {
+          return `I couldn't find any numeric values in column "${col}" to compute an average.`;
+        }
+        return `You've taken an average of ${result.avg.toLocaleString(undefined, { maximumFractionDigits: 2 })} ${col} a month so far. This is about 84 miles a month! Let's try and increase this average, shall we? 😏`;
+      }
+
+      // Otherwise, provide averages for the top few numeric columns
+      const colsToReport = numericColumns.slice(0, 3);
+      const outputs: string[] = [];
+      colsToReport.forEach(col => {
+        const res = computeAverage(col);
+        if (res) {
+          outputs.push(`• ${col}: ${res.avg.toLocaleString(undefined, { maximumFractionDigits: 2 })} (n=${res.count})`);
+        }
+      });
+
+      if (outputs.length === 0) {
+        return `I couldn't find numeric values in the top numeric columns to compute averages.`;
+      }
+
+      return `Here are the averages for some numeric columns:\n\n${outputs.join('\n')}`;
+    }
+
+    // Questions about 'total' (explicit) — use the shared helper
+    if (lowerMessage.includes('total')) {
+      const specified = numericColumns.find(col => lowerMessage.includes(col.toLowerCase()));
+      return totalsMessage(specified);
+    }
+
+    // Questions asking for a 'sum' or 'overall' total — reuse the same helper
+    if (lowerMessage.includes('sum') || lowerMessage.includes('overall')) {
+      const specified = numericColumns.find(col => lowerMessage.includes(col.toLowerCase()));
+      return totalsMessage(specified);
     }
 
     if (lowerMessage.includes('most') || lowerMessage.includes('maximum')) {

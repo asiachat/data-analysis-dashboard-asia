@@ -62,20 +62,20 @@ const Index = () => {
 
   return (
     <ErrorBoundary>
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-green-50 to-blue-100">
       {/* 🎨 Hero Section - The top part of your homepage */}
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-12">
           {/* 🎯 Logo and Title */}
           <div className="flex items-center justify-center mb-6">
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-4 rounded-full">
+            <div className="bg-gradient-to-r from-green-600 to-blue-600 p-4 rounded-full">
               <Database className="h-12 w-12 text-white" />
             </div>
           </div>
           
           
           {/* 📝 WEEK 1: Students customize this title with their name */}
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent mb-4">
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent mb-4">
             Asia's Data Hub
           </h1>
           <p className="text-xl text-slate-600 mb-2">Data Insight Engine</p>
@@ -104,7 +104,7 @@ const Index = () => {
         <Card className="bg-white/50 backdrop-blur-sm border-purple-200 mt-6">
           <CardHeader>
             <CardTitle className="flex items-center">
-              <Upload className="mr-3 h-6 w-6 text-purple-600" />
+              <Upload className="mr-3 h-6 w-6 text-green-600" />
               Week 2: Interactive Progress Demo
             </CardTitle>
             <CardDescription>

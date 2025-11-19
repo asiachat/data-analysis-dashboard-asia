@@ -20,6 +20,7 @@ import Dashboard from '@/components/Dashboard';
 import { DataRow } from '@/types/data';
 import Footer from '@/components/Footer';
 // 🆕 WEEK 3: Import NameInput demo
+<<<<<<< Updated upstream
 import { Suspense, lazy } from 'react';
 // Helper to add an artificial delay to dynamic imports so fallbacks remain visible
 const lazyWithDelay = (factory: () => Promise<any>, ms = 800) =>
@@ -36,6 +37,15 @@ const NameInput = lazyWithDelay(() => import('@/components/NameInput'));
   import ErrorBoundary from "@/components/ErrorBoundary";
   
   
+=======
+ import NameInput from '@/components/NameInput';
+
+// 🔧 WEEK 2: Import your UploadProgressSimulator component here
+import UploadProgressSimulator from '@/components/UploadProgressSim';
+// 🔧 WEEK 3+: Additional imports will be added as you progress
+
+
+>>>>>>> Stashed changes
 const Index = () => {
   // 🧠 Component State - this is your component's memory!
   // useState lets your component remember and change data

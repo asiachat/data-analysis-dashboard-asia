@@ -22,7 +22,7 @@ interface ChartSectionProps {
 }
 
 // Color palette for charts - Week 8 enhancement: Make this theme-aware and customizable
-const COLORS = ['#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899'];
+const COLORS = ['#4D5511', '#2F372F', '#343F27', '#30481E', '#264036', '#2F4C41'];
 
 const ChartSection = ({ data, showAll = false }: ChartSectionProps) => {
   // 🚀 React Performance Optimization - Critical for Professional Apps

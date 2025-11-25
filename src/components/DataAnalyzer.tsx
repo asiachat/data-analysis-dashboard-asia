@@ -23,6 +23,7 @@ const analyzeData = () => {
     setAnalysis({ error: 'No valid numbers found' }); // shows if list is empty
     return;
   }
+ 
 
   // calculations
   const sum = validNumbers.reduce((total, num) => total + num, 0);
@@ -48,18 +49,28 @@ const analyzeData = () => {
 };
 
 return (
+<Card className="w-full"> 
+    <CardHeader> 
+    <CardTitle>Week 4: Data Analysis</CardTitle>
+    </CardHeader> 
 <div>
 <select
+aria-label='drop-down menu to select one of three different datasets'
   value={currentDataset}
   onChange={(e) => setCurrentDataset(e.target.value)}
-  className="w-full p-2 border rounded"
+  className="flex justify-center p-2 border rounded"
 >
   <option value="temperatures">Temperatures (°F)</option>
   <option value="testScores">Test Scores</option>
   <option value="salesFigures">Sales Figures ($)</option>
 </select> 
-
-<Button onClick={analyzeData} className="w-full">Analyze Data</Button>
+<div className="flex justify-center gap-3 mb-3">
+<Button onClick={analyzeData} >Analyze Data</Button>
+<Button onClick = {() => setAnalysis(null)} variant="outline">
+    Clear
+</Button>
+<br/>
+</div>
 {analysis && (
   <div>
     {analysis.error ? (
@@ -76,10 +87,13 @@ return (
         <div><strong>Data Points:</strong> {analysis.count}</div>
       </div>
     )}
+
   </div>
+ 
 )}
 
 </div>
+</Card>
 );
  
 

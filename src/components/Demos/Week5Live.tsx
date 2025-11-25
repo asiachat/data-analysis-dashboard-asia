@@ -1,5 +1,6 @@
 import React from 'react';
 import DataAnalyzer from '../DataAnalyzer';
+import SimpleChart from '../SimpleChart';
 
 const Week5Live = () => {
     return (
@@ -7,6 +8,8 @@ const Week5Live = () => {
             <h1>Week 5 Live Demo</h1>
             <DataAnalyzer/>
             <p>This is the content for Week 5 Live Demo.</p>
+            <DataAnalyzer/>
+            <SimpleChart/>
         </div>
     );
 }

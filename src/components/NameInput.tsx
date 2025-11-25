@@ -7,34 +7,61 @@ const NameInput = () => {
   const [name, setName] = useState("");
   const [greeting, setGreeting] = useState("");
   const [error, setError] = useState("");
+  const [email, setEmail] = useState("");
 
   const handleSubmit = () => {
     setError("");
-    if (!name.trim()) {
-      setError("Please enter your name");
+    if (!name.trim() && !email.trim()) {
+      setError("Please enter your name and email.");
       return;
     }
+    if (!name.trim()) {
+      setError("Please enter your name.");
+      return;
+    }
+    if (!email.trim()) {
+      setError("Please enter your email.");
+      return;
+    }
+    
     if (name.trim().length < 2) {
       setError("Name must be at least 2 characters");
+      return;
+    }
+    if (!email.includes('@') || !email.includes('.')) {
+      setError("Email is not valid.");
       return;
     }
     setGreeting(`Hello, ${name.trim()}! Welcome to data analysis!`);
   };
 
+ 
+
   return (
-    <Card className="max-w-md mx-auto">
+    <Card className="w-full">
       <CardHeader>
-        <CardTitle>Personalize Your Experience</CardTitle>
+        <CardTitle>Week 3: Name Input</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <Input
-          placeholder="Enter your name"
+        aria-label="form for nme submission"
+          placeholder="What's your name?"
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
-        <Button onClick={handleSubmit} className="w-full">
+        <Input
+        aria-label="form for email submission"
+        placeholder="What's your email?"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}/>
+        <div className="flex justify-center gap-3">
+        <Button onClick={handleSubmit}>
           Say Hello
         </Button>
+        <Button onClick = {() => {setName(""); setGreeting(""); setEmail(""); setError("");}} variant="outline">
+          Clear
+          </Button>
+          </div>
         {error && (
           <p className="text-center text-red-600 text-sm">{error}</p>
         )}

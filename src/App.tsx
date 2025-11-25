@@ -58,6 +58,7 @@ function App() {
 
           <Route path="/week6-live" element={<Week6Live />} />
 
+          
 
           {/* 🔍 Week 9: Quality Detective Challenge */}
           <Route path="/broken-demo" element={<BrokenDemo />} />

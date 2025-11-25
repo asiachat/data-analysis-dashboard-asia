@@ -1,4 +1,3 @@
-
 // ==========================================
 // 🏠 WEEK 1: Index.tsx - Homepage Component
 // ==========================================
@@ -9,31 +8,60 @@
 import { useState } from 'react';
 
 // 🎨 Icon imports - beautiful icons for your UI
-import { Upload, BarChart3, PieChart, TrendingUp, Database } from 'lucide-react';
+import { Upload, BarChart3, PieChart, TrendingUp, Database, Divide } from 'lucide-react';
 
 // 🧩 UI Component imports - pre-built components for your interface
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 // 📊 Data-related imports - components that handle your data
-import DataUpload from '@/components/DataUpload';
+
 import Dashboard from '@/components/Dashboard';
 import { DataRow } from '@/types/data';
+import Footer from '@/components/Footer';
 // 🆕 WEEK 3: Import NameInput demo
 
-import NameInput from '@/components/NameInput';
+import { Suspense, lazy } from 'react';
+// Helper to add an artificial delay to dynamic imports so fallbacks remain visible
+const lazyWithDelay = (factory: () => Promise<any>, ms = 800) =>
+  lazy(() => new Promise(resolve => setTimeout(() => factory().then(resolve), ms)));
+const NameInput = lazyWithDelay(() => import('@/components/NameInput'));
+
+// 🔧 WEEK 2: Import your UploadProgressSimulator component here (lazy-loaded below)
+// 🔧 WEEK 3+: Additional imports will be added as you progress
+  const DataAnalyzer = lazyWithDelay(() => import('@/components/DataAnalyzer'));
+  const SimpleChart = lazyWithDelay(() => import('@/components/SimpleChart'));
+  const MockAIChat = lazyWithDelay(() => import('@/components/MockAIChat'));
+  const UploadProgressSimulator = lazyWithDelay(() => import('@/components/UploadProgressSimulator'));
+  const DataUpload = lazyWithDelay(() => import('@/components/DataUpload'));
+  import ErrorBoundary from "@/components/ErrorBoundary";
+  
+  
+
+
 
 // 🔧 WEEK 2: Import your UploadProgressSimulator component here
-import UploadProgressSimulator from '@/components/UploadProgressSim';
+
+
 // 🔧 WEEK 3+: Additional imports will be added as you progress
-import DataAnalyzer from '@/components/DataAnalyzer';
+
 
 function Index() {
   // 🧠 Component State - this is your component's memory!
   // useState lets your component remember and change data
   const [data, setData] = useState<DataRow[]>([]); // Stores uploaded data
   const [fileName, setFileName] = useState<string>(''); // Remembers file name
+  const [showPlayground, setShowPlayground] = useState(false); // Toggle playground visibility
 
+  // Quick sample data (useful for testing charts/insights without uploading a file)
+  const sampleData: DataRow[] = [
+    { Product: 'T-Shirts', Sales: 150, Month: 'January' },
+    { Product: 'Jeans', Sales: 200, Month: 'January' },
+    { Product: 'Shoes', Sales: 175, Month: 'January' },
+    { Product: 'T-Shirts', Sales: 180, Month: 'February' },
+    { Product: 'Jeans', Sales: 220, Month: 'February' },
+    { Product: 'Shoes', Sales: 160, Month: 'February' },
+  ];
 
   // 🔄 Event Handler - function that runs when data is uploaded
   const handleDataLoad = (loadedData: DataRow[], name: string) => {
@@ -43,43 +71,97 @@ function Index() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+    <ErrorBoundary>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-green-50 to-blue-100">
       {/* 🎨 Hero Section - The top part of your homepage */}
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-12">
           {/* 🎯 Logo and Title */}
           <div className="flex items-center justify-center mb-6">
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-4 rounded-full">
+            <div className="bg-gradient-to-r from-green-600 to-blue-600 p-4 rounded-full">
               <Database className="h-12 w-12 text-white" />
             </div>
           </div>
+          
 
           {/* 📝 WEEK 1: Students customize this title with their name */}
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent mb-4">
-            Asia's Data Hub
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent mb-4">
+            Go the Distance!
           </h1>
           <p className="text-xl text-slate-600 mb-2">Data Insight Engine</p>
           <p className="text-lg text-slate-500 max-w-2xl mx-auto">
             Upload your dataset and instantly discover insights, visualize trends, and explore your data with interactive charts and analytics.
           </p>
           <p className="text-lg text-slate-500 max-w-2xl mx-auto">
-            Analyze anything! Built by Asia, future data scientist</p>
-          {/*WEEK 3: Live Event Handling Demo (removed NameInput from homepage) */}
-          {<div className="mt-8 mb-8 flex justify-center">
-              <NameInput />
-            </div> }
-        </div>
+          Analyze anything! Built by Asia, future data scientist</p>
+          <br/>
+          {/* 🆕 WEEK 3: Live Event Handling Demo (removed NameInput from homepage) */}
+          
 
         {/* 🔧 WEEK 2: ADD YOUR PROGRESS COMPONENT HERE! */}
         {/* This is where students will add their UploadProgressSimulator component */}
-        {/* Example: */}
-         <div className="mb-8">
-              <UploadProgressSimulator />
-            </div> 
 
-            <div className="w-full max-w-4xl">
-              <DataAnalyzer />
-            </div> 
+  <div>
+  {/*Toggle Switch for Playground */}
+<Button onClick={() => setShowPlayground(!showPlayground)}>
+  {showPlayground ? 'Hide Interactive Playground' : 'Click Here for Interactive Playground!'}
+</Button>
+
+{/*Conditionally render playground components based on toggle */}
+{showPlayground && (
+  <>
+    {/*lazy loading for all the components */}
+        <Card className="bg-white/50 backdrop-blur-sm border-purple-200 mt-6">
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Upload className="mr-3 h-6 w-6 text-green-600" />
+              Week 2: Interactive Progress Demo
+            </CardTitle>
+            <CardDescription>
+              Try our upload progress simulator built with React state!
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Suspense fallback={<div className="h-24 flex items-center justify-center text-muted-foreground">Loading demo...</div>}>
+              <UploadProgressSimulator />
+            </Suspense>
+          </CardContent>
+        </Card>
+
+<br/>
+
+<div className="mt-8 mb-8 flex justify-center">
+            <Suspense fallback={<div className="h-10 flex items-center justify-center text-muted-foreground">Loading name input...</div>}>
+              <NameInput />
+            </Suspense>
+          </div> 
+
+        <div>
+          <Suspense fallback={<div className="h-16 flex items-center justify-center text-muted-foreground">Loading analyzer...</div>}>
+            <DataAnalyzer/>
+          </Suspense>
+        </div>
+
+        <br/>
+
+        <div>
+          <Suspense fallback={<div className="h-32 flex items-center justify-center text-muted-foreground">Loading chart...</div>}>
+            <SimpleChart/>
+          </Suspense>
+        </div>
+
+        <br/>
+
+        {data.length === 0 && (
+          <div>
+            <Suspense fallback={<div className="h-32 flex items-center justify-center text-muted-foreground">Loading assistant...</div>}>
+              <MockAIChat data={data} />
+            </Suspense>
+          </div>
+        )}
+        <br/>
+  </>
+)}
 
         {data.length === 0 ? (
           <>
@@ -134,7 +216,14 @@ function Index() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
+                {/*Added a lazy load to Data Upload with delay. */}
+                <Suspense fallback={<div className="h-32 flex items-center justify-center text-muted-foreground">Loading Data Upload...</div>}>
                 <DataUpload onDataLoad={handleDataLoad} />
+                </Suspense>
+                <div className="mt-4 flex gap-2 justify-center">
+                  <Button onClick={() => handleDataLoad(sampleData, 'sample.csv')}>Load sample data</Button>
+                  <Button variant="ghost" onClick={() => { setData([]); setFileName(''); }}>Clear</Button>
+                </div>
               </CardContent>
             </Card>
           </>
@@ -147,8 +236,15 @@ function Index() {
           </>
         )}
       </div>
+      </div>
+      </div>
+      <Footer name="Asia Chatmon" />
     </div>
+  
+    </ErrorBoundary>
+    
   );
-}
+  
+};
 
 export default Index;

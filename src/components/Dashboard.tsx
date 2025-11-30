@@ -158,7 +158,7 @@ ${Object.entries(summary.columnTypes)
               className="flex items-center gap-2 text-gray-800 dark:text-white border-gray-300 dark:border-gray-700"
             >
               <RefreshCw className="h-4 w-4" />
-              <span className="hidden md:inline">New Dataset</span>
+              <span className="hidden md:inline">Reset</span>
             </Button>
           </div>
         </div>

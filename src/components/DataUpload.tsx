@@ -165,7 +165,9 @@ const DataUpload = ({ onDataLoad }: DataUploadProps) => {
       throw new Error('No valid data rows found in CSV file');
     }
 
-    console.log(`Parsed ${validRows} valid rows from ${lines.length - 1} total rows`);
+    if (import.meta.env.DEV) {
+      console.log(`Parsed ${validRows} valid rows from ${lines.length - 1} total rows`);
+    }
     return data;
   };
 
@@ -208,7 +210,9 @@ const DataUpload = ({ onDataLoad }: DataUploadProps) => {
       
       // Small delay to show completion
       setTimeout(() => {
-        console.log('Upload successful:', uploadStats);
+        if (import.meta.env.DEV) {
+          console.log('Upload successful:', uploadStats);
+        }
         onDataLoad(data, file.name);
       }, 500);
 
@@ -302,6 +306,8 @@ const DataUpload = ({ onDataLoad }: DataUploadProps) => {
             onDragOver={(e) => e.preventDefault()}
             onDragEnter={() => setIsDragging(true)}
             onDragLeave={() => setIsDragging(false)}
+            role="region"
+            aria-label="CSV file upload drop zone"
           >
             <div className="flex flex-col items-center space-y-4">
               <div className="p-4 rounded-full bg-primary/10">
@@ -324,16 +330,28 @@ const DataUpload = ({ onDataLoad }: DataUploadProps) => {
               </div>
 
               {isLoading && (
-                <div className="w-full max-w-xs space-y-3" aria-live="polite">
-                  {/* Skeleton progress bar */}
-                  <div className="h-2 rounded-full bg-muted/60 animate-pulse" style={{ width: '100%' }} aria-hidden="true" />
+                <div className="w-full max-w-xs space-y-3" aria-live="polite" aria-busy="true">
+                  {/* Accessible progress bar */}
+                  <div
+                    className="h-2 rounded-full bg-muted/60 overflow-hidden"
+                    role="progressbar"
+                    aria-valuenow={uploadProgress}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-label="File upload progress"
+                  >
+                    <div
+                      className="h-full bg-primary transition-all duration-200"
+                      style={{ width: `${uploadProgress}%` }}
+                    />
+                  </div>
 
                   {/* Skeleton text lines to mimic status and filename */}
                   <div className="h-3 rounded-md bg-muted/60 animate-pulse w-3/4" aria-hidden="true" />
                   <div className="h-3 rounded-md bg-muted/60 animate-pulse w-1/2" aria-hidden="true" />
 
-                  {/* Hidden live status for screen readers */}
-                  <div className="text-xs text-muted-foreground mt-1 sr-only">Processing: {uploadProgress}%</div>
+                  {/* Live status for screen readers */}
+                  <div className="text-xs text-muted-foreground mt-1" aria-hidden={false}>Processing: {uploadProgress}%</div>
                 </div>
               )}
 
@@ -350,7 +368,7 @@ const DataUpload = ({ onDataLoad }: DataUploadProps) => {
               )}
 
               <input
-              aria-label='input for file submission'
+                aria-label='Upload CSV file'
                 id="file-input"
                 type="file"
                 accept=".csv"

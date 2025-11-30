@@ -5,27 +5,20 @@
 // This is the main dashboard that displays after data is uploaded
 // Students will enhance this component throughout weeks 4-10
 
-import { useState, useMemo } from 'react';
-import { RefreshCw, Download, BarChart3, PieChart, LineChart, Table, MessageCircle, FileText, Image } from 'lucide-react';
+import { useState, useMemo, useEffect } from 'react';
+import { RefreshCw, Download, BarChart3, LineChart, Table, MessageCircle, FileText } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { DataRow } from '@/types/data';
 import DataTable from './DataTable';
 import ChartSection from './ChartSection';
 import InsightsPanel from './InsightsPanel';
 import ChatInterface from './ChatInterface';
 import AssistantErrorBoundary from './AssistantErrorBoundary';
+import ErrorBoundary from './ErrorBoundary';
 import { generateDataInsights, getDataSummary } from '@/utils/dataAnalysis';
 
-// 🔧 WEEK 6: Import custom chart components here
-// Example: import CustomChartBuilder from './CustomChartBuilder';
-
-// 🔧 WEEK 8: Import personal data analysis components here  
-// Example: import PersonalAnalytics from './PersonalAnalytics';
-
-// 🔧 WEEK 9: Import AI components here
-// Example: import AIInsightGenerator from './AIInsightGenerator';
+// Extension points (future feature placeholders) intentionally trimmed for cleanliness.
 
 interface DashboardProps {
   data: DataRow[];
@@ -36,24 +29,19 @@ interface DashboardProps {
 const Dashboard = ({ data, fileName, onReset }: DashboardProps) => {
   // 🧠 Dashboard state management
   const [activeTab, setActiveTab] = useState('overview');
+
+  // Listen for navigation events dispatched from Index header menu
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const ce = e as CustomEvent<string>;
+      const targetTab = ce.detail;
+      if (targetTab) setActiveTab(targetTab);
+    };
+    window.addEventListener('dashboard:navigate', handler as EventListener);
+    return () => window.removeEventListener('dashboard:navigate', handler as EventListener);
+  }, []);
   
-  // 🔧 WEEK 4: Add data processing state here
-  // Example: const [filteredData, setFilteredData] = useState(data);
-  
-  // 🔧 WEEK 5: Add file handling state here
-  // Example: const [exportFormat, setExportFormat] = useState('csv');
-  
-  // 🔧 WEEK 6: Add chart customization state here
-  // Example: const [chartConfig, setChartConfig] = useState({});
-  
-  // 🔧 WEEK 7: Add API integration state here
-  // Example: const [externalData, setExternalData] = useState([]);
-  
-  // 🔧 WEEK 8: Add personal analytics state here
-  // Example: const [personalInsights, setPersonalInsights] = useState([]);
-  
-  // 🔧 WEEK 9: Add AI insights state here
-  // Example: const [aiGeneratedInsights, setAiGeneratedInsights] = useState([]);
+  // Placeholders for future enhancements removed; add new state here as needed.
 
   // 📊 Computed values - these recalculate when data changes
   const summary = useMemo(() => getDataSummary(data), [data]);
@@ -130,129 +118,79 @@ ${Object.entries(summary.columnTypes)
   };
 
   return (
-    <div className="space-y-6">
-      {/* Enhanced Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h2 className="text-3xl font-bold text-gray-900">Data Analysis Dashboard</h2>
-          <div className="flex items-center gap-4 text-sm text-gray-600 mt-1">
-            <span className="flex items-center gap-1">
+    <div className="space-y-6 max-w-full overflow-x-hidden">
+      {/* Header */}
+      <div className="bg-white dark:bg-gray-900 border-b dark:border-gray-800 shadow-sm sticky top-0 z-10">
+        <div className="flex justify-between items-center px-4 py-3 max-w-full">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Data Analysis Dashboard</h2>
+            <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-white mt-0.5">
+              <span className="flex items-center gap-1">
+                <FileText className="h-3 w-3" />
+                <span className="font-semibold">{fileName}</span>
+              </span>
+              <span className="hidden sm:inline">{data.length.toLocaleString()} rows</span>
+            </div>
+          </div>
+          <div className="hidden sm:flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleExportCSV}
+              className="flex items-center gap-2 text-gray-800 dark:text-white border-gray-300 dark:border-gray-700"
+            >
+              <Download className="h-4 w-4" />
+              <span className="hidden md:inline">Export Data</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleExportInsights}
+              className="flex items-center gap-2 text-gray-800 dark:text-white border-gray-300 dark:border-gray-700"
+            >
               <FileText className="h-4 w-4" />
-              <span className="font-semibold">{fileName}</span>
-            </span>
-            <span>{data.length.toLocaleString()} rows</span>
-            <span>{Object.keys(data[0] || {}).length} columns</span>
-            <span>{summary.numericColumns} numeric</span>
+              <span className="hidden md:inline">Export Report</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onReset}
+              className="flex items-center gap-2 text-gray-800 dark:text-white border-gray-300 dark:border-gray-700"
+            >
+              <RefreshCw className="h-4 w-4" />
+              <span className="hidden md:inline">New Dataset</span>
+            </Button>
           </div>
         </div>
-        <div className="flex gap-2 flex-wrap">
-          <Button variant="outline" onClick={handleExportCSV} className="flex items-center gap-2">
-            <Download className="h-4 w-4" />
-            Export Data
-          </Button>
-          <Button variant="outline" onClick={handleExportInsights} className="flex items-center gap-2">
-            <FileText className="h-4 w-4" />
-            Export Report
-          </Button>
-          <Button variant="outline" onClick={onReset} className="flex items-center gap-2">
-            <RefreshCw className="h-4 w-4" />
-            New Dataset
-          </Button>
-        </div>
       </div>
 
-      {/* Enhanced Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-blue-600">Total Records</CardTitle>
-            <BarChart3 className="h-4 w-4 text-blue-800" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-blue-900">{summary.totalRows.toLocaleString()}</div>
-            <p className="text-xs text-blue-600 mt-1">rows of data</p>
-          </CardContent>
-        </Card>
-        
-        <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-green-800">Data Columns</CardTitle>
-            <Table className="h-4 w-4 text-green-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-900">{summary.totalColumns}</div>
-            <p className="text-xs text-green-600 mt-1">total fields</p>
-          </CardContent>
-        </Card>
-        
-        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-purple-800">Numeric Fields</CardTitle>
-            <LineChart className="h-4 w-4 text-purple-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-purple-900">{summary.numericColumns}</div>
-            <p className="text-xs text-purple-600 mt-1">for analysis</p>
-          </CardContent>
-        </Card>
-        
-        <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-orange-800">Data Quality</CardTitle>
-            <PieChart className="h-4 w-4 text-orange-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-orange-900">
-              {Object.values(summary.missingValues).every(count => count === 0) ? '100%' : 
-               `${(100 - (Object.values(summary.missingValues).reduce((a, b) => a + b, 0) / (summary.totalRows * summary.totalColumns) * 100)).toFixed(1)}%`}
-            </div>
-            <p className="text-xs text-orange-600 mt-1">complete data</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Main Content Tabs */}
+      {/* Main Content - Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="overview" className="flex items-center gap-2">
-            <BarChart3 className="h-4 w-4" />
-            <span className="hidden sm:inline">Overview</span>
-          </TabsTrigger>
-          <TabsTrigger value="charts" className="flex items-center gap-2">
-            <PieChart className="h-4 w-4" />
-            <span className="hidden sm:inline">Charts</span>
-          </TabsTrigger>
-          <TabsTrigger value="insights" className="flex items-center gap-2">
-            <LineChart className="h-4 w-4" />
-            <span className="hidden sm:inline">Insights</span>
-          </TabsTrigger>
-          <TabsTrigger value="chat" className="flex items-center gap-2">
-            <MessageCircle className="h-4 w-4" />
-            <span className="hidden sm:inline">Chat</span>
-          </TabsTrigger>
-          <TabsTrigger value="data" className="flex items-center gap-2">
-            <Table className="h-4 w-4" />
-            <span className="hidden sm:inline">Data</span>
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="overview" className="space-y-4">
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-            <div className="xl:col-span-2">
+        <TabsContent value="overview" className="space-y-6">
+          {/* Charts section - full width */}
+          <ErrorBoundary>
+            <div className="w-full">
               <ChartSection data={data} />
             </div>
-            <div className="xl:col-span-1">
+          </ErrorBoundary>
+          {/* Insights section - below charts */}
+          <ErrorBoundary>
+            <div className="w-full">
               <InsightsPanel data={data} insights={insights.slice(0, 6)} />
             </div>
-          </div>
+          </ErrorBoundary>
         </TabsContent>
 
         <TabsContent value="charts">
-          <ChartSection data={data} showAll />
+          <ErrorBoundary>
+            <ChartSection data={data} showAll />
+          </ErrorBoundary>
         </TabsContent>
 
         <TabsContent value="insights">
-          <InsightsPanel data={data} insights={insights} showAll />
+          <ErrorBoundary>
+            <InsightsPanel data={data} insights={insights} showAll />
+          </ErrorBoundary>
         </TabsContent>
 
         <TabsContent value="chat">
@@ -262,7 +200,9 @@ ${Object.entries(summary.columnTypes)
         </TabsContent>
 
         <TabsContent value="data">
-          <DataTable data={data} />
+          <ErrorBoundary>
+            <DataTable data={data} />
+          </ErrorBoundary>
         </TabsContent>
       </Tabs>
     </div>

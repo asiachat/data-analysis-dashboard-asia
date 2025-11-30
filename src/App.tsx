@@ -22,6 +22,8 @@ import BrokenDemo from "./pages/BrokenDemo";
 import BrokenDemoSolution from "./pages/BrokenDemoSolution";
 
 import Week8Live from "./components/Demos/Week8Live";
+import InteractivePlayground from "./pages/InteractivePlayground";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 // Create a client for managing data queries (don't worry about this yet!)
 const queryClient = new QueryClient();
@@ -29,15 +31,16 @@ const queryClient = new QueryClient();
 // 🚀 Main App Component - This wraps your entire application
 function App() {
   return (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      {/* These Toaster components handle popup notifications */}
-      <Toaster />
-      <Sonner />
-      
-      {/* 🧭 Router setup - manages which page to show */}
-      <BrowserRouter>
-        <Routes>
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        {/* These Toaster components handle popup notifications */}
+        <Toaster />
+        <Sonner />
+        
+        {/* 🧭 Router setup - manages which page to show */}
+        <BrowserRouter>
+          <Routes>
           {/* 🏠 Main route - shows your homepage */}
           <Route path="/" element={<Index />} />
           
@@ -59,6 +62,8 @@ function App() {
           <Route path="/week6-live" element={<Week6Live />} />
 
           
+          {/* Interactive Playground page */}
+          <Route path="/interactive-playground" element={<InteractivePlayground />} />
 
           {/* 🔍 Week 9: Quality Detective Challenge */}
           <Route path="/broken-demo" element={<BrokenDemo />} />
@@ -68,10 +73,11 @@ function App() {
           <Route path="*" element={<NotFound />} />
 
           <Route path="/week8-live" element={<Week8Live />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  </ErrorBoundary>
   );
 }
 

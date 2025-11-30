@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { Send, MessageCircle, Bot, User } from 'lucide-react';
+import { Send, MessageCircle, Bot, User, RefreshCw } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -32,11 +32,6 @@ const ChatInterface = ({ data }: ChatInterfaceProps) => {
   const generateAIResponse = (userMessage: string, dataContext: DataRow[]): string => {
     const lowerMessage = userMessage.toLowerCase();
     
-    // error trigger 
-    if (lowerMessage.includes('something irrelevant to my data') || lowerMessage.includes('😁')) {
-      throw new Error('Test error from ChatInterface - ErrorBoundary should catch this!');
-    }
-    
     const summary = getDataSummary(dataContext);
     const insights = generateDataInsights(dataContext);
     const numericColumns = getNumericColumns(dataContext);
@@ -63,12 +58,13 @@ const ChatInterface = ({ data }: ChatInterfaceProps) => {
         return `I couldn't find any numeric columns in your dataset to calculate a total.`;
       }
 
+      // Use local logic only for totals
       if (specified) {
         const result = computeSum(specified);
         if (!result) {
           return `I couldn't find any numeric values in column "${specified}" to compute a total.`;
         }
-        return `So far, you've taken a total of  ${specified} ${result.sum.toLocaleString(undefined, { maximumFractionDigits: 2 })} this year. This is about the equivalent of 837 miles! That's amazing! Let's keep it up for the rest of the year! 💪🏾`;
+        return `The total ${specified} is ${result.sum.toLocaleString(undefined, { maximumFractionDigits: 2 })} based on ${result.count} values.`;
       }
 
       if (numericColumns.length === 1) {
@@ -77,7 +73,7 @@ const ChatInterface = ({ data }: ChatInterfaceProps) => {
         if (!result) {
           return `I couldn't find any numeric values in column "${col}" to compute a total.`;
         }
-        return `So far, you've taken a total of  ${specified} ${result.sum.toLocaleString(undefined, { maximumFractionDigits: 2 })} this year. This is about the equivalent of 837 miles! That's amazing! Let's keep it up for the rest of the year! 💪🏾`;
+        return `The total ${col} is ${result.sum.toLocaleString(undefined, { maximumFractionDigits: 2 })} based on ${result.count} values.`;
       }
 
       const colsToReport = numericColumns.slice(0, 3);
@@ -95,36 +91,15 @@ const ChatInterface = ({ data }: ChatInterfaceProps) => {
 
       return `Here are the totals for some numeric columns:\n\n${outputs.join('\n')}`;
     };
-    
 
-
-  
-
-    // Pattern matching for different types of questions
-    if (lowerMessage.includes('summary') || lowerMessage.includes('overview')) {
-      return `Based on your dataset, here's what I can tell you:
-
-📊 **Dataset Overview:**
-- ${summary.totalRows.toLocaleString()} total rows
-- ${summary.totalColumns} columns (${summary.numericColumns} numeric, ${summary.textColumns} text)
-- Key numeric columns: ${numericColumns.slice(0, 3).join(', ')}
-
-🔍 **Top Insights:**
-${insights.slice(0, 3).map(insight => `• ${insight.title}: ${insight.description}`).join('\n')}
-
-Would you like me to dive deeper into any specific aspect of your data?`;
-    }
-
-    if (lowerMessage.includes('chart') || lowerMessage.includes('visualiz')) {
-      const suggestions = [];
+    // Visualization suggestions
+    if (numericColumns.length >= 1) {
+      const suggestions: string[] = [];
       if (numericColumns.length >= 2) {
         suggestions.push(`📈 **Scatter Plot**: Compare ${numericColumns[0]} vs ${numericColumns[1]} to find correlations`);
       }
-      if (numericColumns.length >= 1) {
-        suggestions.push(`📊 **Bar Chart**: Show distribution of ${numericColumns[0]} values`);
-        suggestions.push(`📈 **Line Chart**: Track trends in ${numericColumns[0]} over time`);
-      }
-      
+      suggestions.push(`📊 **Bar Chart**: Show distribution of ${numericColumns[0]} values`);
+      suggestions.push(`📈 **Line Chart**: Track trends in ${numericColumns[0]} over time`);
       return `Great question! Based on your data structure, here are some visualization recommendations:
 
 ${suggestions.join('\n')}
@@ -278,19 +253,6 @@ Which columns are you most interested in analyzing?`;
       return totalsMessage(specified);
     }
 
-    // Questions asking for a 'sum' or 'overall' total — reuse the same helper
-    if (lowerMessage.includes('sum') || lowerMessage.includes('overall')) {
-      const specified = numericColumns.find(col => lowerMessage.includes(col.toLowerCase()));
-      return totalsMessage(specified);
-    }
-
-    if (lowerMessage.includes('most') || lowerMessage.includes('maximum')) {
-      return `It looks like you took the most steps in October. The day you walked the most (so far) was October 29, with a total of 18,458 steps! 💪🏾`;
-    }
-
-    if (lowerMessage.includes('least')) {
-      return 'It looks like you walked the least in May. However, you took the least steps this year (so far) on May 5, with a total of only 903 steps. 😓'
-    }
 
     // Default response with helpful suggestions
     return `I'm here to help you understand your data! Based on your dataset with ${summary.totalRows.toLocaleString()} rows and ${summary.totalColumns} columns, I can help you with:
@@ -319,6 +281,12 @@ What would you like to explore first?`;
   const handleSendMessage = async () => {
     if (!input.trim()) return;
 
+    // error trigger
+    if (input.toLowerCase().includes('irrelevant to my data')) {
+      setError(new Error('Test error from ChatInterface - AssistantErrorBoundary should catch this!'));
+      return;
+    }
+
     const userMessage: ChatMessage = {
       id: Date.now().toString(),
       type: 'user',
@@ -332,10 +300,41 @@ What would you like to explore first?`;
     setIsLoading(true);
 
     // Simulate realistic AI response time
-    setTimeout(() => {
+    setTimeout(async () => {
       try {
-        const aiResponse = generateAIResponse(currentInput, data);
-        
+        let aiResponse = '';
+        // Always use the AI API for every question
+        try {
+          const res = await fetch('http://localhost:4000/insight', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              prompt: currentInput,
+              data
+            })
+          });
+          const payload = await res.json();
+          // If the API returns a 'response' field, use it directly
+          if (payload?.response) {
+            aiResponse = payload.response;
+          } else {
+            // Otherwise, format summary/anomalies as a conversational answer
+            const insight = payload?.insight || payload;
+            const summary = insight?.summary || 'Here’s what I found in your dataset:';
+            const anomalies: string[] = insight?.anomalies || [];
+            const list = anomalies.length ? `\n\nI also noticed:\n${anomalies.map(a => `• ${a}`).join('\n')}` : '';
+            aiResponse = `${summary}${list}`;
+          }
+        } catch (apiErr) {
+          // Fallback to local response generation on API failure
+          aiResponse = generateAIResponse(currentInput, data);
+        }
+
+        // Make the answer more conversational
+        if (aiResponse) {
+          aiResponse = `🤖 ${aiResponse}\n\nIf you have more questions about your data, just ask!`;
+        }
+
         const aiMessage: ChatMessage = {
           id: (Date.now() + 1).toString(),
           type: 'ai',
@@ -346,41 +345,64 @@ What would you like to explore first?`;
         setMessages(prev => [...prev, aiMessage]);
         setIsLoading(false);
       } catch (err) {
-        // Store the error in state so it renders on next cycle and is caught by ErrorBoundary
         setIsLoading(false);
         setError(err instanceof Error ? err : new Error(String(err)));
       }
     }, 1000 + Math.random() * 1000); // 1-2 second delay for realism
   };
 
+  const handleClearChat = () => {
+    setMessages([]);
+    setInput('');
+  };
+
   return (
-    <Card className="h-[600px] flex flex-col">
+    <Card className="flex flex-col" aria-labelledby="chat-title" role="region">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <MessageCircle className="h-5 w-5" />
-          Data Analysis Assistant
-        </CardTitle>
-        <p className="text-sm text-muted-foreground">
-          Ask questions about your data, request insights, or get help understanding patterns
-        </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle id="chat-title" className="flex items-center gap-2">
+              <MessageCircle className="h-5 w-5" aria-hidden="true" />
+              <span>Data Analysis Assistant</span>
+            </CardTitle>
+            <p className="text-sm text-muted-foreground mt-1">
+              Ask questions about your data, request insights, or get help understanding patterns
+            </p>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleClearChat}
+            disabled={messages.length === 0}
+            className="flex items-center gap-2"
+            title="Clear conversation"
+            aria-label="Clear conversation"
+          >
+            <RefreshCw className="h-4 w-4" aria-hidden="true" />
+            Clear
+          </Button>
+        </div>
       </CardHeader>
       <CardContent className="flex-1 flex flex-col bg-muted/5 rounded-lg p-3">
-        <div className="flex-1 overflow-y-auto mb-4 min-h-0">
-          <div className="space-y-4">
+        <div className="flex-1 overflow-y-auto mb-4 min-h-0" aria-live="polite" aria-relevant="additions" role="log">
+          <div className="space-y-4" id="chat-messages">
           {messages.length === 0 ? (
             <div className="text-center text-muted-foreground py-8">
-              <Bot className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <Bot className="h-12 w-12 mx-auto mb-4 opacity-50" aria-hidden="true" />
               <p className="font-medium">Ready to analyze your data!</p>
               <p className="text-sm mt-2">Try asking:</p>
               <div className="mt-4 space-y-2 text-left max-w-md mx-auto">
                 <div className="bg-muted/50 p-2 rounded text-xs">
-                  "Give me a summary of this dataset"
+                  "What can be seen from this dataset?"
                 </div>
                 <div className="bg-muted/50 p-2 rounded text-xs">
-                  "What patterns do you see in the data?"
+                  "Are there any outliers or patterns that you see?"
                 </div>
                 <div className="bg-muted/50 p-2 rounded text-xs">
-                  "Are there any outliers I should know about?"
+                  "How can I use this data to improve?"
+                </div>
+                <div className="bg-muted/50 p-2 rounded text-xs">
+                  "What happens when you find something irrelevant to my data?"
                 </div>
               </div>
             </div>
@@ -412,21 +434,21 @@ What would you like to explore first?`;
           )}
           
           {isLoading && (
-            <div className="flex gap-3 justify-start">
+            <div className="flex gap-3 justify-start" role="status" aria-label="Generating AI response">
               <div className="flex gap-3 max-w-[85%]">
-                {/* Avatar skeleton */}
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-muted animate-pulse" aria-hidden="true" />
+                {/* Avatar skeleton with smooth pulse */}
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-muted animate-skeleton" aria-hidden="true" />
 
                 {/* Message bubble skeleton that mimics multiple text lines */}
                 <div className="bg-muted text-muted-foreground rounded-lg p-3 w-full">
                   <div className="space-y-2">
-                    <div className="h-3 bg-muted/60 rounded-md w-40 animate-pulse" aria-hidden="true" />
-                    <div className="h-3 bg-muted/60 rounded-md w-56 animate-pulse" aria-hidden="true" />
-                    <div className="h-3 bg-muted/60 rounded-md w-32 animate-pulse" aria-hidden="true" />
+                    <div className="h-3 bg-muted-foreground/20 rounded-md w-40 animate-skeleton" aria-hidden="true" />
+                    <div className="h-3 bg-muted-foreground/20 rounded-md w-56 animate-skeleton" aria-hidden="true" style={{ animationDelay: '0.15s' }} />
+                    <div className="h-3 bg-muted-foreground/20 rounded-md w-32 animate-skeleton" aria-hidden="true" style={{ animationDelay: '0.3s' }} />
                   </div>
                   <div className="text-xs opacity-70 mt-2">
                     <span className="sr-only">Analyzing your data</span>
-                    <span aria-hidden="true" className="inline-block h-3 w-24 bg-muted/50 rounded-md animate-pulse" />
+                    <span aria-hidden="true" className="inline-block h-3 w-24 bg-muted-foreground/15 rounded-md animate-skeleton" style={{ animationDelay: '0.45s' }} />
                   </div>
                 </div>
               </div>
@@ -439,7 +461,7 @@ What would you like to explore first?`;
           <Textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask about your data... (e.g., 'What insights can you find?' or 'Explain the trends')"
+            placeholder="Ask me anything..."
             className="flex-1 min-h-[60px] resize-none"
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.shiftKey) {
@@ -447,13 +469,16 @@ What would you like to explore first?`;
                 handleSendMessage();
               }
             }}
+            aria-label="Message input"
           />
           <Button 
             onClick={handleSendMessage} 
             disabled={!input.trim() || isLoading}
             className="self-end"
+            aria-label="Send message"
+            title="Send message"
           >
-            <Send className="h-4 w-4" />
+            <Send className="h-4 w-4" aria-hidden="true" />
           </Button>
         </div>
         

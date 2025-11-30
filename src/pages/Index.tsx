@@ -1,250 +1,187 @@
 // ==========================================
-// 🏠 WEEK 1: Index.tsx - Homepage Component
+// Index.tsx - Application Homepage & Layout Shell
 // ==========================================
-// This is your main homepage! You will customize this in Week 1
-// and add interactive components starting in Week 2.
+// Provides: global header, static sidebar, dark mode toggle, demo data loader
+// Renders either the upload prompt (AutoLoadButton) or the main Dashboard.
+// Simplified from teaching scaffold: removed unused demo imports & week markers.
 
-// 📦 React imports - the core tools for building components
-import { useState } from 'react';
-
-// 🎨 Icon imports - beautiful icons for your UI
-import { Upload, BarChart3, PieChart, TrendingUp, Database, Divide } from 'lucide-react';
-
-// 🧩 UI Component imports - pre-built components for your interface
+import { useState, useEffect, Suspense, lazy } from 'react';
+import { Footprints } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-
-// 📊 Data-related imports - components that handle your data
-
 import Dashboard from '@/components/Dashboard';
 import { DataRow } from '@/types/data';
 import Footer from '@/components/Footer';
-// 🆕 WEEK 3: Import NameInput demo
+import ErrorBoundary from "@/components/ErrorBoundary";
 
-import { Suspense, lazy } from 'react';
-// Helper to add an artificial delay to dynamic imports so fallbacks remain visible
-const lazyWithDelay = (factory: () => Promise<any>, ms = 800) =>
+// Lazy-load only components actually used
+const lazyWithDelay = (factory: () => Promise<any>, ms = 1250) =>
   lazy(() => new Promise(resolve => setTimeout(() => factory().then(resolve), ms)));
-const NameInput = lazyWithDelay(() => import('@/components/NameInput'));
-
-// 🔧 WEEK 2: Import your UploadProgressSimulator component here (lazy-loaded below)
-// 🔧 WEEK 3+: Additional imports will be added as you progress
-  const DataAnalyzer = lazyWithDelay(() => import('@/components/DataAnalyzer'));
-  const SimpleChart = lazyWithDelay(() => import('@/components/SimpleChart'));
-  const MockAIChat = lazyWithDelay(() => import('@/components/MockAIChat'));
-  const UploadProgressSimulator = lazyWithDelay(() => import('@/components/UploadProgressSimulator'));
-  const DataUpload = lazyWithDelay(() => import('@/components/DataUpload'));
-  import ErrorBoundary from "@/components/ErrorBoundary";
-  
-  
-
-
-
-// 🔧 WEEK 2: Import your UploadProgressSimulator component here
-
-
-// 🔧 WEEK 3+: Additional imports will be added as you progress
+// Slightly increased delay so the demo loader is noticeable
+const AutoLoadButton = lazyWithDelay(() => import('@/components/AutoLoadButton'));
 
 
 function Index() {
-  // 🧠 Component State - this is your component's memory!
-  // useState lets your component remember and change data
-  const [data, setData] = useState<DataRow[]>([]); // Stores uploaded data
-  const [fileName, setFileName] = useState<string>(''); // Remembers file name
-  const [showPlayground, setShowPlayground] = useState(false); // Toggle playground visibility
+  // Data & file name state
+  const [data, setData] = useState<DataRow[]>([]);
+  const [fileName, setFileName] = useState<string>('');
 
   // Quick sample data (useful for testing charts/insights without uploading a file)
   const sampleData: DataRow[] = [
-    { Product: 'T-Shirts', Sales: 150, Month: 'January' },
-    { Product: 'Jeans', Sales: 200, Month: 'January' },
-    { Product: 'Shoes', Sales: 175, Month: 'January' },
-    { Product: 'T-Shirts', Sales: 180, Month: 'February' },
-    { Product: 'Jeans', Sales: 220, Month: 'February' },
-    { Product: 'Shoes', Sales: 160, Month: 'February' },
+    { Month: 'January', Steps: 175025 },
+    { Month: 'February', Steps: 186570 },
+    { Month: 'March', Steps: 189042 },
+    { Month: 'April',Steps: 216891 },
+    { Month: 'May', Steps: 117887 },
+    { Month: 'June', Steps: 146268 },
+    { Month: 'July', Steps: 205597},
+    { Month: 'August', Steps: 210894},
+    { Month: 'September', Steps: 228040},
+    { Month: 'October', Steps: 299116},
+    { Month: 'November', Steps: 200747},
+    { Month: 'December', Steps: 255845}
   ];
 
-  // 🔄 Event Handler - function that runs when data is uploaded
+  // Handler invoked when demo data is loaded
   const handleDataLoad = (loadedData: DataRow[], name: string) => {
     setData(loadedData);
     setFileName(name);
-    console.log('Data loaded:', loadedData.length, 'rows');
+    if (import.meta.env.DEV) {
+      console.log('Data loaded:', loadedData.length, 'rows');
+    }
   };
+
+  const [darkMode, setDarkMode] = useState(false);
+
+  // Apply dark mode class to document root for proper cascade
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [darkMode]);
 
   return (
     <ErrorBoundary>
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-green-50 to-blue-100">
-      {/* 🎨 Hero Section - The top part of your homepage */}
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center mb-12">
-          {/* 🎯 Logo and Title */}
-          <div className="flex items-center justify-center mb-6">
-            <div className="bg-gradient-to-r from-green-600 to-blue-600 p-4 rounded-full">
-              <Database className="h-12 w-12 text-white" />
+      <div className={`min-h-screen flex flex-col ${darkMode ? 'bg-gradient-to-br from-slate-900 via-gray-900 to-blue-950' : 'bg-gradient-to-br from-slate-50 via-green-50 to-blue-100'}`}>
+        {/* Accessibility: Skip link for keyboard users */}
+        <a href="#main" className="skip-link">Skip to main content</a>
+        {/* Global Header */}
+        <header className={`sticky top-0 z-20 backdrop-blur ${darkMode ? 'bg-gray-900/80 border-b border-gray-800' : 'bg-white/80 border-b shadow-sm'}`}>
+          <div className="px-4 py-3 flex items-center justify-between ml-64">
+            <div className="flex items-center gap-3">
+              <div className={`p-2 rounded-md ${darkMode ? 'bg-gradient-to-r from-blue-900 to-blue-700' : 'bg-gradient-to-r from-green-600 to-blue-600'}`}> 
+                <Footprints className="h-8 w-8 text-white" />
+              </div>
+              <div>
+                <h1 className={`text-xl sm:text-2xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent ${darkMode ? 'text-blue-300' : ''}`}>Go the Distance!</h1>
+                <p className={`text-xs sm:text-sm ${darkMode ? 'text-white' : 'text-foreground'}`}>Data analysis application for walkers</p>
+              </div>
             </div>
+            {/* Dark mode toggle button */}
+            <Button
+              variant={darkMode ? 'secondary' : 'outline'}
+              size="sm"
+              onClick={() => setDarkMode(!darkMode)}
+              className="ml-4"
+              title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+              aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+              aria-pressed={darkMode}
+            >
+              {darkMode ? (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m8.66-8.66l-.71.71M4.05 4.05l-.71.71M21 12h-1M4 12H3m16.24 4.24l-.71-.71M6.34 17.66l-.71-.71" /></svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z" /></svg>
+              )}
+            </Button>
           </div>
-          
+        </header>
 
-          {/* 📝 WEEK 1: Students customize this title with their name */}
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent mb-4">
-            Go the Distance!
-          </h1>
-          <p className="text-xl text-slate-600 mb-2">Data Insight Engine</p>
-          <p className="text-lg text-slate-500 max-w-2xl mx-auto">
-            Upload your dataset and instantly discover insights, visualize trends, and explore your data with interactive charts and analytics.
-          </p>
-          <p className="text-lg text-slate-500 max-w-2xl mx-auto">
-          Analyze anything! Built by Asia, future data scientist</p>
-          <br/>
-          {/* 🆕 WEEK 3: Live Event Handling Demo (removed NameInput from homepage) */}
-          
-
-        {/* 🔧 WEEK 2: ADD YOUR PROGRESS COMPONENT HERE! */}
-        {/* This is where students will add their UploadProgressSimulator component */}
-
-  <div>
-  {/*Toggle Switch for Playground */}
-<Button onClick={() => setShowPlayground(!showPlayground)}>
-  {showPlayground ? 'Hide Interactive Playground' : 'Click Here for Interactive Playground!'}
-</Button>
-
-{/*Conditionally render playground components based on toggle */}
-{showPlayground && (
-  <>
-    {/*lazy loading for all the components */}
-        <Card className="bg-white/50 backdrop-blur-sm border-purple-200 mt-6">
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Upload className="mr-3 h-6 w-6 text-green-600" />
-              Week 2: Interactive Progress Demo
-            </CardTitle>
-            <CardDescription>
-              Try our upload progress simulator built with React state!
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Suspense fallback={<div className="h-24 flex items-center justify-center text-muted-foreground">Loading demo...</div>}>
-              <UploadProgressSimulator />
-            </Suspense>
-          </CardContent>
-        </Card>
-
-<br/>
-
-<div className="mt-8 mb-8 flex justify-center">
-            <Suspense fallback={<div className="h-10 flex items-center justify-center text-muted-foreground">Loading name input...</div>}>
-              <NameInput />
-            </Suspense>
-          </div> 
-
-        <div>
-          <Suspense fallback={<div className="h-16 flex items-center justify-center text-muted-foreground">Loading analyzer...</div>}>
-            <DataAnalyzer/>
-          </Suspense>
+        {/* Static Sidebar */}
+        <div className={`fixed top-0 left-0 h-full z-40 w-64 ${darkMode ? 'bg-gray-900 border-gray-800' : 'bg-white'} shadow-xl border-r flex flex-col`}>
+          <HeaderMenu dataLoaded={data.length > 0} darkMode={darkMode} />
         </div>
 
-        <br/>
-
-        <div>
-          <Suspense fallback={<div className="h-32 flex items-center justify-center text-muted-foreground">Loading chart...</div>}>
-            <SimpleChart/>
-          </Suspense>
-        </div>
-
-        <br/>
-
-        {data.length === 0 && (
-          <div>
-            <Suspense fallback={<div className="h-32 flex items-center justify-center text-muted-foreground">Loading assistant...</div>}>
-              <MockAIChat data={data} />
-            </Suspense>
+        {/* Hero / Content */}
+        <main id="main" role="main" className="flex-1 ml-64 px-4 py-8 max-w-full overflow-x-hidden"> 
+          <div className="max-w-5xl mx-auto text-center mb-8">
+            <p className="text-lg text-foreground dark:text-white mb-2">Welcome to Go the Distance, an interactive data tool for walking!</p>
+            <p className="text-muted-foreground dark:text-white">
+              Here you can visualize the amount of steps you take. Use insights to see where you are and how you can go further.
+              Let's improve ourselves, one step at a time!
+            </p>
+            <p className="text-muted-foreground dark:text-white">
+              -- Created with care by Asia Chatmon 💚
+            </p>
           </div>
-        )}
-        <br/>
-  </>
-)}
 
-        {data.length === 0 ? (
-          <>
-            {/* 🎨 Features Grid - Shows what your app can do */}
-            <div className="grid md:grid-cols-3 gap-6 mb-12">
-              {/* 📤 Upload Feature Card */}
-              <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-white/70 backdrop-blur-sm">
-                <CardHeader className="text-center">
-                  <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Upload className="h-8 w-8 text-blue-600" />
-                  </div>
-                  <CardTitle className="text-xl">Easy Data Upload</CardTitle>
-                  <CardDescription>
-                    Simply drag and drop your CSV files or click to browse. Support for various data formats.
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-
-              {/* 📊 Charts Feature Card */}
-              <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-white/70 backdrop-blur-sm">
-                <CardHeader className="text-center">
-                  <div className="bg-indigo-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <BarChart3 className="h-8 w-8 text-indigo-600" />
-                  </div>
-                  <CardTitle className="text-xl">Interactive Charts</CardTitle>
-                  <CardDescription>
-                    Automatically generate bar charts, line graphs, pie charts, and more from your data.
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-
-              {/* 🧠 Insights Feature Card */}
-              <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-white/70 backdrop-blur-sm">
-                <CardHeader className="text-center">
-                  <div className="bg-teal-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <TrendingUp className="h-8 w-8 text-teal-600" />
-                  </div>
-                  <CardTitle className="text-xl">Smart Insights</CardTitle>
-                  <CardDescription>
-                    Discover patterns, trends, and statistical insights automatically generated from your dataset.
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-            </div>
-
-            {/* 📤 Upload Section - Where users upload their data */}
-            <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm max-w-2xl mx-auto">
+          {/* Upload or Dashboard */}
+          {data.length === 0 ? (
+            <Card className={`border-0 shadow-xl backdrop-blur-sm max-w-2xl mx-auto ${darkMode ? 'bg-white text-gray-900' : 'bg-white/80'}`}> 
               <CardHeader className="text-center">
-                <CardTitle className="text-2xl">Get Started</CardTitle>
-                <CardDescription>
-                  Upload your CSV file to begin exploring your data
+                <CardTitle className={`text-2xl ${darkMode ? 'text-gray-900' : ''}`}>Let's Get Stepping!</CardTitle>
+                <CardDescription className={darkMode ? 'text-gray-700' : ''}>
+                  No need to manually upload! Just press the button below to automatically load your data!
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                {/*Added a lazy load to Data Upload with delay. */}
-                <Suspense fallback={<div className="h-32 flex items-center justify-center text-muted-foreground">Loading Data Upload...</div>}>
-                <DataUpload onDataLoad={handleDataLoad} />
-                </Suspense>
-                <div className="mt-4 flex gap-2 justify-center">
-                  <Button onClick={() => handleDataLoad(sampleData, 'sample.csv')}>Load sample data</Button>
-                  <Button variant="ghost" onClick={() => { setData([]); setFileName(''); }}>Clear</Button>
+                <div className="mt-2 flex gap-2 justify-center">
+                  <Suspense fallback={<div className="h-10 flex items-center justify-center text-muted-foreground">Preparing demo loader...</div>}>
+                    <AutoLoadButton sampleData={sampleData} onLoad={handleDataLoad} />
+                  </Suspense>
                 </div>
               </CardContent>
             </Card>
-          </>
-        ) : (
-          <>
-            <Dashboard data={data} fileName={fileName} onReset={() => {
-              setData([]);
-              setFileName('');
-            } } />
-          </>
-        )}
+          ) : (
+            <Dashboard
+              data={data}
+              fileName={fileName}
+              onReset={() => {
+                setData([]);
+                setFileName('');
+              }}
+            />
+          )}
+        </main>
+        <div className="ml-64">
+          <Footer name="Asia Chatmon" />
+        </div>
       </div>
-      </div>
-      </div>
-      <Footer name="Asia Chatmon" />
-    </div>
-  
     </ErrorBoundary>
-    
   );
   
 };
 
+
+// Static sidebar menu component
+function HeaderMenu({ dataLoaded, darkMode = false }: { dataLoaded: boolean, darkMode?: boolean }) {
+  const itemClass = (enabled: boolean) => `block w-full text-left px-3 py-2 rounded-md text-sm ${enabled ? (darkMode ? 'hover:bg-gray-800 text-white' : 'hover:bg-gray-100') : 'opacity-50 cursor-not-allowed'}`;
+  const navigateTab = (tab: string) => {
+    window.dispatchEvent(new CustomEvent('dashboard:navigate', { detail: tab }));
+    const main = document.querySelector('main');
+    if (main) main.scrollIntoView({ behavior: 'smooth' });
+  };
+  return (
+    <div className={`flex flex-col h-full p-4 ${darkMode ? 'text-white' : ''}`}>
+      <div className="font-bold text-lg mb-4 flex items-center gap-2">
+        <div className={`p-2 rounded-md ${darkMode ? 'bg-gradient-to-r from-blue-900 to-blue-700' : 'bg-gradient-to-r from-green-600 to-blue-600'}`}> 
+          <Footprints className="h-6 w-6 text-white" />
+        </div>
+        <span>Menu</span>
+      </div>
+      <a href="/interactive-playground" className={`block px-3 py-2 rounded-md text-sm ${darkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'}`}>Playground</a>
+      <div className={`border-t my-2 ${darkMode ? 'border-gray-700' : ''}`} />
+      <button className={itemClass(dataLoaded)} onClick={() => dataLoaded && navigateTab('overview')}>Overview</button>
+      <button className={itemClass(dataLoaded)} onClick={() => dataLoaded && navigateTab('charts')}>Charts</button>
+      <button className={itemClass(dataLoaded)} onClick={() => dataLoaded && navigateTab('insights')}>Insights</button>
+      <button className={itemClass(dataLoaded)} onClick={() => dataLoaded && navigateTab('chat')}>Chat</button>
+      <button className={itemClass(dataLoaded)} onClick={() => dataLoaded && navigateTab('data')}>Data</button>
+      {!dataLoaded && (
+        <div className={`text-xs mt-2 px-2 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Load data to enable dashboard tabs.</div>
+      )}
+      <div className="flex-1" />
+    </div>
+  );
+}
 export default Index;

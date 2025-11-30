@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { CheckCircle2 } from 'lucide-react';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 export default function BrokenDemoSolution() {
   const [showChart, setShowChart] = useState(false);
@@ -24,7 +25,8 @@ export default function BrokenDemoSolution() {
   };
 
   return (
-    <div className="container mx-auto p-8">
+    <ErrorBoundary>
+      <div className="container mx-auto p-8">
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -112,6 +114,7 @@ export default function BrokenDemoSolution() {
           </div>
         </CardContent>
       </Card>
-    </div>
+      </div>
+    </ErrorBoundary>
   );
 }

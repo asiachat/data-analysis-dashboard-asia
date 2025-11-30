@@ -1,4 +1,5 @@
 import InstructorCounterDemo from '../components/InstructorCounterDemo';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 /**
  * 🎓 INSTRUCTOR DEMO PAGE
@@ -11,9 +12,11 @@ import InstructorCounterDemo from '../components/InstructorCounterDemo';
 
 const DemoCounterPage = () => {
   return (
-    <div className="min-h-screen bg-gray-100 py-8">
-      <InstructorCounterDemo />
-    </div>
+    <ErrorBoundary>
+      <div className="min-h-screen bg-gray-100 py-8">
+        <InstructorCounterDemo />
+      </div>
+    </ErrorBoundary>
   );
 };
 

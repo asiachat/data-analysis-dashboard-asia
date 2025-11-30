@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 export default function BrokenDemo() {
   const [showChart, setShowChart] = useState(false);
@@ -12,7 +13,9 @@ export default function BrokenDemo() {
   const handleShowChart = () => {
     if (useEmptyData) {
       chartData = [];
-      console.log('Chart data set to empty array:', chartData);
+      if (import.meta.env.DEV) {
+        console.log('Chart data set to empty array:', chartData);
+      }
       if (chartData.length === 0) {
         console.error('Error: Chart data is empty. Chart will not display any bars.');
       }
@@ -22,18 +25,23 @@ export default function BrokenDemo() {
         { name: 'Feb', value: 300 },
         { name: 'Mar', value: 600 }
       ];
-      console.log('Chart data set to sample data:', chartData);
+      if (import.meta.env.DEV) {
+        console.log('Chart data set to sample data:', chartData);
+      }
       // Example error: wrong data format (intentional bug)
       if (typeof chartData[0].value === 'string') {
         console.error('Error: Chart data values should be numbers, not strings.');
       }
     }
     setShowChart(true);
-    console.log('Show chart button clicked. showChart state:', true);
+    if (import.meta.env.DEV) {
+      console.log('Show chart button clicked. showChart state:', true);
+    }
   };
 
   return (
-    <div className="container mx-auto p-8">
+    <ErrorBoundary>
+      <div className="container mx-auto p-8">
       <Card>
         <CardHeader>
           <CardTitle>Quality Detective Challenge</CardTitle>
@@ -53,7 +61,9 @@ export default function BrokenDemo() {
               variant="outline" 
               onClick={() => {
                 setUseEmptyData(!useEmptyData);
-                console.log('Toggled useEmptyData. New value:', !useEmptyData);
+                if (import.meta.env.DEV) {
+                  console.log('Toggled useEmptyData. New value:', !useEmptyData);
+                }
                 if (!useEmptyData) {
                   console.error('Error: Switched to empty data with no chart data. Chart will be blank.');
                 }
@@ -78,6 +88,7 @@ export default function BrokenDemo() {
           )}
         </CardContent>
       </Card>
-    </div>
+      </div>
+    </ErrorBoundary>
   );
 }

@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 // 🎯 Basic Counter Component
 const BasicCounter = () => {
@@ -12,7 +13,7 @@ const BasicCounter = () => {
     <Card className="w-full">
       <CardHeader>
         <CardTitle className="text-lg">1. Basic Counter</CardTitle>
-        <p className="text-sm text-gray-600">Simple useState with button click</p>
+  <p className="text-sm text-gray-600 dark:text-white">Simple useState with button click</p>
       </CardHeader>
       <CardContent>
         <div className="text-center space-y-4">
@@ -35,7 +36,7 @@ const MultiButtonTracker = () => {
     <Card className="w-full">
       <CardHeader>
         <CardTitle className="text-lg">2. Multi-Button State</CardTitle>
-        <p className="text-sm text-gray-600">Multiple buttons affecting same state</p>
+  <p className="text-sm text-gray-600 dark:text-white">Multiple buttons affecting same state</p>
       </CardHeader>
       <CardContent>
         <div className="text-center space-y-4">
@@ -63,7 +64,7 @@ const NameTracker = () => {
     <Card className="w-full">
       <CardHeader>
         <CardTitle className="text-lg">3. Form Input State</CardTitle>
-        <p className="text-sm text-gray-600">Controlled input with real-time updates</p>
+  <p className="text-sm text-gray-600 dark:text-white">Controlled input with real-time updates</p>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
@@ -122,7 +123,7 @@ const EventPlayground = () => {
     <Card className="w-full">
       <CardHeader>
         <CardTitle className="text-lg">4. Interactive Event Playground</CardTitle>
-        <p className="text-sm text-gray-600">Multiple states working together with conditional logic</p>
+  <p className="text-sm text-gray-600 dark:text-white">Multiple states working together with conditional logic</p>
       </CardHeader>
       <CardContent>
         <div 
@@ -149,7 +150,7 @@ const EventPlayground = () => {
             <Button variant="outline" onClick={() => setCount(0)}>Reset Count</Button>
           </div>
           
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-600 dark:text-white">
             🎯 Try typing your name and clicking buttons! Watch how everything connects!
           </p>
         </div>
@@ -197,7 +198,7 @@ const UploadProgressSimulator = () => {
     <Card className="w-full">
       <CardHeader>
         <CardTitle className="text-lg">5. Upload Progress Simulator</CardTitle>
-        <p className="text-sm text-gray-600">Complex state with intervals and conditional rendering</p>
+  <p className="text-sm text-gray-600 dark:text-white">Complex state with intervals and conditional rendering</p>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
@@ -212,7 +213,7 @@ const UploadProgressSimulator = () => {
           {/* Progress Text and Status */}
           <div className="text-center">
             <span className="text-3xl font-bold text-blue-600">{Math.round(progress)}%</span>
-            <div className="text-sm text-gray-600 mt-2">
+            <div className="text-sm text-gray-600 dark:text-white mt-2">
               {isUploading && "📤 Uploading file..."}
               {!isUploading && progress === 0 && "📁 Ready to upload"}
               {!isUploading && progress > 0 && progress < 100 && "⏸️ Upload paused"}
@@ -261,7 +262,7 @@ const ToggleDemo = () => {
     <Card className="w-full">
       <CardHeader>
         <CardTitle className="text-lg">6. Boolean State & Toggles</CardTitle>
-        <p className="text-sm text-gray-600">Working with true/false states</p>
+  <p className="text-sm text-gray-600 dark:text-white">Working with true/false states</p>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
@@ -305,7 +306,7 @@ const ToggleDemo = () => {
           
           <Separator />
           
-          <div className="text-sm text-gray-600">
+          <div className="text-sm text-gray-600 dark:text-white">
             Current state: Dark={isDarkMode ? 'true' : 'false'}, 
             Notifications={notifications ? 'true' : 'false'}
           </div>
@@ -318,14 +319,15 @@ const ToggleDemo = () => {
 // 🎯 Main Live Session Page Component
 export default function LiveSession() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-indigo-100 py-8">
+    <ErrorBoundary>
+      <div className="min-h-screen bg-gradient-to-b from-blue-50 to-indigo-100 py-8">
       <div className="container mx-auto px-4 max-w-6xl">
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 mb-4">
             Week 2: Live Session Playground
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-600 dark:text-white max-w-2xl mx-auto">
             Interactive React state examples for hands-on learning. Try each component and watch state in action!
           </p>
           <Badge variant="secondary" className="mt-2">
@@ -360,7 +362,7 @@ export default function LiveSession() {
                   <li>See how React tracks every state variable</li>
                 </ol>
               </div>
-              <p className="text-center text-gray-600">
+              <p className="text-center text-gray-600 dark:text-white">
                 This is how professional React developers debug their applications! 🛠️
               </p>
             </div>
@@ -371,13 +373,13 @@ export default function LiveSession() {
         <Card>
           <CardHeader>
             <CardTitle className="text-xl text-center">📋 Copy-Paste Code Examples</CardTitle>
-            <p className="text-center text-gray-600">Ready-to-use code for your own experiments</p>
+            <p className="text-center text-gray-600 dark:text-white">Ready-to-use code for your own experiments</p>
           </CardHeader>
           <CardContent>
             <div className="grid md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <h4 className="font-bold">Basic Patterns:</h4>
-                <ul className="text-sm space-y-1 text-gray-600">
+                <ul className="text-sm space-y-1 text-gray-600 dark:text-white">
                   <li>• Simple counter with useState</li>
                   <li>• Form input handling</li>
                   <li>• Boolean toggles</li>
@@ -386,7 +388,7 @@ export default function LiveSession() {
               </div>
               <div className="space-y-2">
                 <h4 className="font-bold">Advanced Patterns:</h4>
-                <ul className="text-sm space-y-1 text-gray-600">
+                <ul className="text-sm space-y-1 text-gray-600 dark:text-white">
                   <li>• Multiple states working together</li>
                   <li>• Conditional rendering</li>
                   <li>• Progress simulation with intervals</li>
@@ -397,6 +399,7 @@ export default function LiveSession() {
           </CardContent>
         </Card>
       </div>
-    </div>
+      </div>
+    </ErrorBoundary>
   );
 }

@@ -92,7 +92,7 @@ const InsightsPanel = ({
 
 	const handleGenerateInsight = () => {
 		setIsLoading(true);
-		fetch("/api/server/insight", {
+		fetch("http://localhost:4000/insight", {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({
@@ -101,16 +101,15 @@ const InsightsPanel = ({
 		})
 			.then((res) => res.json())
 			.then((data) => {
-				console.log('Insight response:', data);
-				// Support multiple response shapes:
-				// 1) { insight: { summary, anomalies } } (old docs)
-				// 2) { summary, anomalies } (server returns fields at root)
+				if (import.meta.env.DEV) {
+					console.log('Insight response:', data);
+				}
+				// Support multiple response shapes
 				if (data?.insight) {
 					setAiInsight(data.insight);
 				} else if (data?.summary || data?.anomalies) {
 					setAiInsight({ summary: data.summary || '', anomalies: data.anomalies || [] });
 				} else {
-					// Fallback: store the whole payload as a summary string
 					setAiInsight({ summary: JSON.stringify(data), anomalies: [] });
 				}
 			})
@@ -144,8 +143,7 @@ const InsightsPanel = ({
 					<CardTitle>Insights</CardTitle>
 				</CardHeader>
 				<CardContent>
-					
-					<p className="text-gray-500 text-center py-8">
+					<p className="text-gray-500 dark:text-white text-center py-8">
 						No insights available. Upload data to see automated analysis.
 					</p>
 					{/* TODO: Week 3 - Add loading skeleton when processing data */}
@@ -166,16 +164,24 @@ const InsightsPanel = ({
 				</CardTitle>
 			</CardHeader>
 			<CardContent>
-				<Button onClick={handleGenerateInsight} disabled={isLoading}>
-                 {isLoading ? 'Generating...' : 'Generate AI Insight'}
-                 </Button>
+								<Button onClick={handleGenerateInsight} disabled={isLoading}>
+								 {isLoading ? 'Generating...' : 'Generate AI Insight'}
+								 </Button>
+								{isLoading && (
+									<div className="mt-3 text-xs text-muted-foreground">
+										Generating insights… This may take a few seconds.
+									</div>
+								)}
+
+				 <br/>
+				 <br/>
 				
 				{aiInsight && (
-					<div className="my-4 border rounded-lg p-4 hover:bg-gray-50 transition-colors">
-						<h4 className="font-medium text-gray-900 mb-1">AI Insight</h4>
-						<p className="text-sm text-gray-600 mb-2 text-balance">{aiInsight.summary}</p>
+					<div className="my-4 border rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+						<h4 className="font-medium text-gray-900 dark:text-white mb-1">AI Insight</h4>
+						<p className="text-sm text-gray-600 dark:text-white mb-2 text-balance">{aiInsight.summary}</p>
 						{aiInsight.anomalies && aiInsight.anomalies.length > 0 && (
-							<ul className="list-disc list-inside text-sm text-gray-600 mb-2 text-balance">
+							<ul className="list-disc list-inside text-sm text-gray-600 dark:text-white mb-2 text-balance">
 								{aiInsight.anomalies.map((anomaly) => (
 									<li key={anomaly}>{anomaly}</li>
 								))}
@@ -183,7 +189,7 @@ const InsightsPanel = ({
 						)}
 					</div>
 				)}
-				<div className="space-y-4">
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 					{/* 🟡 MEDIUM - Week 4: Dynamic List Rendering */}
 					{/* TODO: Students - Understand array mapping and complex layouts */}
 					{/* 
@@ -203,7 +209,7 @@ const InsightsPanel = ({
 					{insights.map((insight, index) => (
 						<div
 							key={index}
-							className="border rounded-lg p-4 hover:bg-gray-50 transition-colors"
+							className="border rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
 						>
 							{/* TODO: Week 4 - Add click handler to expand insight details */}
 							<div className="flex items-start justify-between gap-3">
@@ -216,10 +222,10 @@ const InsightsPanel = ({
 										{getInsightIcon(insight.type)}
 									</div>
 									<div className="flex-1">
-										<h4 className="font-medium text-gray-900 mb-1">
+										<h4 className="font-medium text-gray-900 dark:text-white mb-1">
 											{insight.title}
 										</h4>
-										<p className="text-sm text-gray-600 mb-2">
+										<p className="text-sm text-gray-600 dark:text-white mb-2">
 											{insight.description}
 										</p>
 
@@ -290,12 +296,11 @@ const InsightsPanel = ({
           
           Real-world example: Google shows 10 results per page, not 1000
           */}
-					{!showAll && insights.length > 4 && (
-						<div className="text-center pt-4">
-							<p className="text-sm text-gray-500">
-								{insights.length - 4} more insights available in the Insights
-								tab
-							</p>
+						{!showAll && insights.length > 4 && (
+							<div className="text-center pt-4">
+								<p className="text-sm text-gray-500 dark:text-white">
+									{insights.length - 4} more insights available in the Insights tab
+								</p>
 							{/* TODO: Week 5 - Add "Show More" button */}
 						</div>
 					)}

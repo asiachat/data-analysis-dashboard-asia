@@ -38,6 +38,85 @@
   animation: skeleton-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
+/* =============================
+    Tab transition animations
+    ============================= */
+/* Slide in from right (entering content) */
+@keyframes slide-in-right {
+   0% {
+      transform: translateX(24px);
+      opacity: 0;
+   }
+   100% {
+      transform: translateX(0);
+      opacity: 1;
+   }
+}
+
+/* Slide out to left (leaving content) */
+@keyframes slide-out-left {
+   0% {
+      transform: translateX(0);
+      opacity: 1;
+   }
+   100% {
+      transform: translateX(-24px);
+      opacity: 0;
+   }
+}
+
+/* Slide in from left */
+@keyframes slide-in-left {
+   0% {
+      transform: translateX(-24px);
+      opacity: 0;
+   }
+   100% {
+      transform: translateX(0);
+      opacity: 1;
+   }
+}
+
+/* Slide out to right */
+@keyframes slide-out-right {
+   0% {
+      transform: translateX(0);
+      opacity: 1;
+   }
+   100% {
+      transform: translateX(24px);
+      opacity: 0;
+   }
+}
+
+/* Utility classes to apply transitions */
+.animate-slide-in-right {
+   animation: slide-in-right 240ms ease-out both;
+}
+
+.animate-slide-out-left {
+   animation: slide-out-left 240ms ease-in both;
+}
+
+.animate-slide-in-left {
+   animation: slide-in-left 240ms ease-out both;
+}
+
+.animate-slide-out-right {
+   animation: slide-out-right 240ms ease-in both;
+}
+
+/* Helper: reduce motion preference */
+@media (prefers-reduced-motion: reduce) {
+   .animate-slide-in-right,
+   .animate-slide-out-left,
+   .animate-slide-in-left,
+   .animate-slide-out-right {
+      animation-duration: 3ms;
+      animation-iteration-count: 1;
+   }
+}
+
 /* 🌈 Color System - Light Mode
    These are CSS custom properties (variables) that define our color palette.
    HSL format: Hue (0-360°), Saturation (0-100%), Lightness (0-100%)
@@ -197,17 +276,12 @@
     font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   }
   
-  /* 🔧 WEEK 3: Students will add custom typography and animations here
-     🔧 WEEK 4: Students will add responsive breakpoints and utilities
-     🔧 WEEK 5: Students will add advanced animations and transitions
+  /* animations */
      
-     Example additions students will make:
+   
      .animate-fade-in { animation: fadeIn 0.3s ease-in-out; }
-     .text-gradient { background: linear-gradient(...); -webkit-background-clip: text; }
      
-  */
-
-  .glass-morphism { backdrop-filter: blur(10px); background: rgba(255,255,255,0.1); }
+     .glass-morphism { backdrop-filter: blur(10px); background: rgba(255,255,255,0.1); }
 
   
 }

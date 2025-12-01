@@ -47,7 +47,7 @@ cd data-discovery-tool ```
 ```npm run preview```
 
 ## 📖 How to Use
-1. Use the "steps" dataset from the repo. (https://github.com/asiachat/data-analysis-dashboard-asia)
+1. Use the "steps" dataset from the repo. (https://github.com/asiachat/data-analysis-dashboard-asia; found in "sample-data" folder)
 2. Explore Visualizations: View your data in interactive charts
 3. Get Insights: See automated analysis of patterns and trends
 4. Ask Questions: Use the AI chat to explore your data further

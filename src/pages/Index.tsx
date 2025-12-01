@@ -1,24 +1,19 @@
 // ==========================================
 // Index.tsx - Application Homepage & Layout Shell
 // ==========================================
-// Provides: global header, static sidebar, dark mode toggle, demo data loader
-// Renders either the upload prompt (AutoLoadButton) or the main Dashboard.
-// Simplified from teaching scaffold: removed unused demo imports & week markers.
+// Provides: global header, static sidebar, dark mode toggle, CSV file upload
+// Renders either the DataUpload component or the main Dashboard.
+// Cleaned up: removed unused imports, lazy loading, and demo data.
 
-import { useState, useEffect, Suspense, lazy } from 'react';
+import { useState, useEffect } from 'react';
 import { Footprints } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Dashboard from '@/components/Dashboard';
+import DataUpload from '@/components/DataUpload';
 import { DataRow } from '@/types/data';
 import Footer from '@/components/Footer';
 import ErrorBoundary from "@/components/ErrorBoundary";
 
-// Lazy-load only components actually used
-const lazyWithDelay = (factory: () => Promise<any>, ms = 1250) =>
-  lazy(() => new Promise(resolve => setTimeout(() => factory().then(resolve), ms)));
-// Slightly increased delay so the demo loader is noticeable
-const AutoLoadButton = lazyWithDelay(() => import('@/components/AutoLoadButton'));
 
 
 function Index() {
@@ -26,23 +21,7 @@ function Index() {
   const [data, setData] = useState<DataRow[]>([]);
   const [fileName, setFileName] = useState<string>('');
 
-  // Quick sample data (useful for testing charts/insights without uploading a file)
-  const sampleData: DataRow[] = [
-    { Month: 'January', Steps: 175025 },
-    { Month: 'February', Steps: 186570 },
-    { Month: 'March', Steps: 189042 },
-    { Month: 'April',Steps: 216891 },
-    { Month: 'May', Steps: 117887 },
-    { Month: 'June', Steps: 146268 },
-    { Month: 'July', Steps: 205597},
-    { Month: 'August', Steps: 210894},
-    { Month: 'September', Steps: 228040},
-    { Month: 'October', Steps: 299116},
-    { Month: 'November', Steps: 200747},
-    { Month: 'December', Steps: 255845}
-  ];
-
-  // Handler invoked when demo data is loaded
+  // Handler invoked when CSV file is uploaded
   const handleDataLoad = (loadedData: DataRow[], name: string) => {
     setData(loadedData);
     setFileName(name);
@@ -116,23 +95,11 @@ function Index() {
             </p>
           </div>
 
-          {/* Upload or Dashboard */}
+          {/* Upload */}
           {data.length === 0 ? (
-            <Card className={`border-0 shadow-xl backdrop-blur-sm max-w-2xl mx-auto ${darkMode ? 'bg-white text-gray-900' : 'bg-white/80'}`}> 
-              <CardHeader className="text-center">
-                <CardTitle className={`text-2xl ${darkMode ? 'text-gray-900' : ''}`}>Let's Get Stepping!</CardTitle>
-                <CardDescription className={darkMode ? 'text-gray-700' : ''}>
-                  No need to manually upload! Just press the button below to automatically load your data!
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="mt-2 flex gap-2 justify-center">
-                  <Suspense fallback={<div className="h-10 flex items-center justify-center text-muted-foreground">Preparing demo loader...</div>}>
-                    <AutoLoadButton sampleData={sampleData} onLoad={handleDataLoad} />
-                  </Suspense>
-                </div>
-              </CardContent>
-            </Card>
+            <div className="max-w-3xl mx-auto">
+              <DataUpload onDataLoad={handleDataLoad} />
+            </div>
           ) : (
             <Dashboard
               data={data}

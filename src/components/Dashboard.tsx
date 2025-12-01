@@ -158,7 +158,7 @@ ${Object.entries(summary.columnTypes)
               className="flex items-center gap-2 text-gray-800 dark:text-white border-gray-300 dark:border-gray-700"
             >
               <RefreshCw className="h-4 w-4" />
-              <span className="hidden md:inline">Reset</span>
+              <span className="hidden md:inline">New Dataset</span>
             </Button>
           </div>
         </div>
@@ -169,13 +169,13 @@ ${Object.entries(summary.columnTypes)
         <TabsContent value="overview" className="space-y-6">
           {/* Charts section - full width */}
           <ErrorBoundary>
-            <div className="w-full">
+            <div className="w-full animate-slide-in-right">
               <ChartSection data={data} />
             </div>
           </ErrorBoundary>
           {/* Insights section - below charts */}
           <ErrorBoundary>
-            <div className="w-full">
+            <div className="w-full animate-slide-in-right">
               <InsightsPanel data={data} insights={insights.slice(0, 6)} />
             </div>
           </ErrorBoundary>
@@ -183,25 +183,33 @@ ${Object.entries(summary.columnTypes)
 
         <TabsContent value="charts">
           <ErrorBoundary>
-            <ChartSection data={data} showAll />
+            <div className="w-full animate-slide-in-right">
+              <ChartSection data={data} showAll />
+            </div>
           </ErrorBoundary>
         </TabsContent>
 
         <TabsContent value="insights">
           <ErrorBoundary>
-            <InsightsPanel data={data} insights={insights} showAll />
+            <div className="w-full animate-slide-in-right">
+              <InsightsPanel data={data} insights={insights} showAll />
+            </div>
           </ErrorBoundary>
         </TabsContent>
 
         <TabsContent value="chat">
           <AssistantErrorBoundary>
-            <ChatInterface data={data} />
+            <div className="w-full animate-slide-in-right">
+              <ChatInterface data={data} />
+            </div>
           </AssistantErrorBoundary>
         </TabsContent>
 
         <TabsContent value="data">
           <ErrorBoundary>
-            <DataTable data={data} />
+            <div className="w-full animate-slide-in-right">
+              <DataTable data={data} />
+            </div>
           </ErrorBoundary>
         </TabsContent>
       </Tabs>

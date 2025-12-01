@@ -286,14 +286,93 @@ const DataUpload = ({ onDataLoad }: DataUploadProps) => {
         <CardHeader className="text-center">
           <CardTitle className="flex items-center justify-center gap-2">
             <FileSpreadsheet className="h-6 w-6" />
-            Upload Your Data
+            Let's Get Stepping!
           </CardTitle>
           <CardDescription>
             Drop your CSV file here or click to browse. Maximum file size: 10MB
           </CardDescription>
         </CardHeader>
         
-        
+          <CardContent>
+            <div
+              onDragOver={(e) => {
+                e.preventDefault();
+                setIsDragging(true);
+              }}
+              onDragLeave={() => setIsDragging(false)}
+              onDrop={handleDrop}
+              className={`
+                relative border-2 border-dashed rounded-lg p-8 text-center transition-all
+                ${isDragging 
+                  ? 'border-primary bg-primary/5 scale-[1.02]' 
+                  : 'border-border hover:border-primary/50 hover:bg-accent/50'
+                }
+                ${isLoading ? 'pointer-events-none opacity-60' : 'cursor-pointer'}
+              `}
+            >
+              <input
+                type="file"
+                accept=".csv"
+                onChange={handleFileInput}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                disabled={isLoading}
+              />
+            
+              <div className="space-y-4">
+                <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+                  {isLoading ? (
+                    <div className="animate-spin">
+                      <FileText className="h-8 w-8 text-primary" />
+                    </div>
+                  ) : (
+                    <Upload className="h-8 w-8 text-primary" />
+                  )}
+                </div>
+
+                <div>
+                  <p className="text-lg font-medium">
+                    {isLoading ? 'Processing your file...' : 
+                     isDragging ? 'Drop your CSV file here' : 
+                     'Drag and drop your CSV file'}
+                  </p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    or click to browse your files
+                  </p>
+                </div>
+
+                {isLoading && (
+                  <div className="space-y-2 max-w-md mx-auto">
+                    <Progress value={uploadProgress} className="h-2" />
+                    <p className="text-xs text-muted-foreground">
+                      {uploadProgress}% complete
+                    </p>
+                  </div>
+                )}
+
+                <div className="text-xs text-muted-foreground space-y-1 max-w-md mx-auto">
+                  <p>✓ Supported format: CSV (.csv)</p>
+                  <p>✓ Maximum file size: 10 MB</p>
+                  <p>✓ Automatic data type detection</p>
+                </div>
+              </div>
+            </div>
+
+            {!isLoading && (
+              <div className="mt-6 p-4 bg-muted/50 rounded-lg">
+                <h4 className="text-sm font-medium mb-2 flex items-center gap-2">
+                  <AlertCircle className="h-4 w-4" />
+                  CSV File Requirements
+                </h4>
+                <ul className="text-xs text-muted-foreground space-y-1 ml-6 list-disc">
+                  <li>First row must contain column headers</li>
+                  <li>At least one data row is required</li>
+                  <li>Columns can contain text, numbers, or boolean values</li>
+                  <li>Empty cells are allowed and will be marked as null</li>
+                  <li>Quoted values with commas are supported</li>
+                </ul>
+              </div>
+            )}
+          </CardContent>
       </Card>
     </div>
   );
